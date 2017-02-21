@@ -1,84 +1,93 @@
-<section>
-  <div class="jumbotron text-center">
-    <div class="row">
-      <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12">
-        <img alt="MEAN.JS" class="img-responsive text-center" src="/modules/core/client/img/brand/logo.png" />
-      </div>
+<section ng-controller="LoginController as vm" class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">Authenticate with OpenStack</h1>
+        <p class="text-muted">You're on your way to launching a compute environment for your selected Dataset.</p>
+        <form class="open-stack-login">
+            <div class="form-group">
+                <div class="row justify-content-sm-center">
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="open-stack-username" placeholder="OpenStack Username">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row justify-content-sm-center">
+                    <div class="col-sm-8">
+                        <input type="password" class="form-control" id="open-stack-password" placeholder="OpenStack Password">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row justify-content-sm-center">
+                    <div class="col-sm-8">
+                        <button class="btn btn-primary btn-block">Login</button>
+                        <small class="os-password-note text-muted">
+                            Your information will never be saved.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-    <br>
-    <div class="row">
-      <p class="lead">
-        Open-Source Full-Stack Solution For MEAN Applications
-      </p>
-    </div>
-    <div class="row">
-      <p>
-        <a class="btn btn-primary btn-lg" href="http://meanjs.org" target="_blank">Learn more</a>
-      </p>
-    </div>
-  </div>
-  <div>
-    <h2>Congrats! You've configured and run the sample application.</h2>
-    <p>MEAN.JS is a web application boilerplate, which means you should start changing everything :-)</p>
-    <p>This sample application tracks users and articles.</p>
-    <ul>
-      <li>
-        Click
-        <em>Sign Up</em> to get started.
-      </li>
-      <li>
-        Configure your app to work with your social accounts, by editing the
-        <em>/config/env/*.js</em> files.
-      </li>
-      <li>
-        Edit your users module.
-      </li>
-      <li>
-        Add new CRUD modules.
-      </li>
-      <li>
-        Have fun...
-      </li>
-    </ul>
-  </div>
-  <div class="row">
-    <div class="col-md-3">
-      <h2><strong>M</strong>ongoDB</h2>
-      <p><a target="_blank" href="http://mongodb.org/">MongoDB</a> is a NoSQL database. MongoDB's <a target="_blank" href="http://docs.mongodb.org/manual/">great manual</a> is the place to get started with NoSQL and MongoDB.</p>
-    </div>
-    <div class="col-md-3">
-      <h2><strong>E</strong>xpress</h2>
-      <p><a target="_blank" href="http://expressjs.com/"> Express</a> is a NodeJS server-side application web framework. Check out <a target="_blank" href="http://expressjs.com/4x/api.html">The ExpressJS API reference for more information</a> or <a target="_blank" href="http://stackoverflow.com/questions/8144214/learning-express-for-node-js">StackOverflow</a> for more info.</p>
-    </div>
-    <div class="col-md-3">
-      <h2><strong>A</strong>ngularJS</h2>
-      <p><a target="_blank" href="http://angularjs.org/">AngularJS</a> is client-side web application framework. The <a target="_blank" href="http://www.thinkster.io/">Thinkster Popular Guide</a> and <a target="_blank" href="https://egghead.io/">Egghead Videos</a> are great resources.</p>
-    </div>
-    <div class="col-md-3">
-      <h2><strong>N</strong>ode.js</h2>
-      <p><a target="_blank" href="http://nodejs.org/">Node.js</a> is a JavaScript run-time, popular for being a web server platform. Node's website and this <a target="_blank" href="http://stackoverflow.com/questions/2353818/how-do-i-get-started-with-node-js">stackOverflow thread</a> offer excellent starting points to get to grasps with node.</p>
-    </div>
-  </div>
-  <div class="well">
-    <h2>MEAN.JS Documentation</h2>
-    <p>
-      Once you're familiar with the foundation technology, check out the MEAN.JS Documentation:
-      <ul>
-        <li><a target="_blank" href="http://meanjs.org/docs.html">MEAN.JS Documentation</a>
-        </li>
-        <!-- <li><a target="_blank" href="http://meanjs.org/generator.html">Yeoman Generator</a>
-				</li> -->
-        <li><a target="_blank" href="http://meanjs.org/modules.html">Modules</a>
-        </li>
-        <li><a target="_blank" href="http://meanjs.org/changelog.html">Changelog</a>
-        </li>
-        <li><a target="_blank" href="http://meanjs.org/community.html">Community</a>
-        </li>
-        <li><a target="_blank" href="http://blog.meanjs.org">Blog</a>
-        </li>
-      </ul>
-    </p>
-  </div>
-  <br>Enjoy &amp; Keep Us Updated,
-  <br>The MEAN.JS Team.
 </section>
+
+<style>
+.navbar {
+  margin-bottom: 0;
+}
+
+.open-stack-login{
+    margin-top: 1em;
+}
+
+.jumbotron {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  margin-bottom: 0;
+  background-color: #fff;
+}
+
+.jumbotron p:last-child {
+  margin-bottom: 0;
+}
+
+.jumbotron-heading {
+  font-weight: 300;
+}
+
+.jumbotron .container {
+  max-width: 40rem;
+}
+
+.album {
+  min-height: 50rem; /* Can be removed; just added for demo purposes */
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: #f7f7f7;
+}
+
+.card {
+  float: left;
+  width: 33.333%;
+  padding: .75rem;
+  margin-bottom: 2rem;
+  border: 0;
+}
+
+.card > img {
+  margin-bottom: .75rem;
+}
+
+.card-text {
+  font-size: 85%;
+}
+
+footer {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+footer p {
+  margin-bottom: .25rem;
+}
+</style>
