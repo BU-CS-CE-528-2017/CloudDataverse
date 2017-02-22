@@ -18,7 +18,7 @@ module.exports = {
 	'public/jstack/JSTACK.Cinder.js',
 	'public/jstack/JSTACK.Comm.js',
 	'public/jstack/JSTACK.Glance.js',
-	'public/jstack/JSTACK.JSTACK.js',
+	'public/jstack/JSTACK.js',
 	'public/jstack/JSTACK.Keystone.js',
 	'public/jstack/JSTACK.Murano.js',
 	'public/jstack/JSTACK.Neutron.js',
