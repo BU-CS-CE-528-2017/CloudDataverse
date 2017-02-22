@@ -1,4 +1,4 @@
-<section ng-controller="LoginController as vm" class="jumbotron text-center">
+<section ng-controller="OpenStackController as vm" class="jumbotron text-center">
     <div class="container">
         <h1 class="jumbotron-heading">Authenticate with OpenStack</h1>
         <p class="text-muted">You're on your way to launching a compute environment for your selected Dataset.</p>
@@ -6,21 +6,21 @@
             <div class="form-group">
                 <div class="row justify-content-sm-center">
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="open-stack-username" placeholder="OpenStack Username">
+                        <input ng-model="vm.User.UserName" type="text" class="form-control" id="open-stack-username" placeholder="OpenStack Username">
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="row justify-content-sm-center">
                     <div class="col-sm-8">
-                        <input type="password" class="form-control" id="open-stack-password" placeholder="OpenStack Password">
+                        <input ng-model="vm.User.Password" type="password" class="form-control" id="open-stack-password" placeholder="OpenStack Password">
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="row justify-content-sm-center">
                     <div class="col-sm-8">
-                        <button class="btn btn-primary btn-block">Login</button>
+                        <button ng-click="vm.AuthenticateUser()" class="btn btn-primary btn-block">Login</button>
                         <small class="os-password-note text-muted">
                             Your information will never be saved.
                         </small>
