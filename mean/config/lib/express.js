@@ -63,6 +63,9 @@ module.exports.initMiddleware = function (app) {
     level: 9
   }));
 
+  app.use(function(req, res, next) { res.header('Access-Control-Allow-Origin', "*"); res.header('Access-Control-Allow-Methods','GET,PUT,POST,DELETE'); res.header('Access-Control-Allow-Headers', 'Content-Type'); next();
+})
+
   // Initialize favicon middleware
   app.use(favicon(app.locals.favicon));
 
@@ -89,6 +92,7 @@ module.exports.initMiddleware = function (app) {
   // Add the cookie parser and flash middleware
   app.use(cookieParser());
   app.use(flash());
+
 };
 
 /**
