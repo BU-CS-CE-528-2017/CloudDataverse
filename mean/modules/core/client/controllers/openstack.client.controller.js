@@ -31,12 +31,25 @@
                 }
             };
 
+            $http.post("https://keystone.kaizen.massopencloud.org:5000/v3/auth/tokens", request)
+                .then(function successCallback(response) {
+                    var config = {
+                        headers: {
+                            'X-Auth-Token': response.headers('X-Auth-Token')
+                        }
+                    };
 
-            var printAll = function(data){console.log(JSON.stringify(data))};
+                    $http.get("https://nova.kaizen.massopencloud.org:8774/v2/d329686636634edc847baf2684a8d7a7/servers", config)
+                        .then(function successCallback(response) {
 
-            // Retrieving Authentication Token
-            JSTACK.Keystone.init("http://keystone.kaizen.massopencloud.org:5000/v3/");
-            JSTACK.Keystone.authenticate(vm.User.UserName, vm.User.Password, null, "tenant_id", printAll);
+                        }, function errorCallback(response) {
+
+                        });
+
+                }, function errorCallback(response) {
+
+                });
+            
 
 
 
