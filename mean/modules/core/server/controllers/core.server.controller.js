@@ -39,6 +39,22 @@ exports.renderServerError = function (req, res) {
   });
 };
 
+exports.openStackAuth = function (req, res) {
+    var OSWrap = require('openstack-wrapper');
+    var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
+
+    keystone.getToken(req.body.user, req.body.password, function (error, token) {
+        if (error) {
+            console.error('An error occurred while authenticating the user with Open Stack.', error);
+        }
+        else {
+            console.log(token);
+        }
+    });
+
+    res.send(req.body.user + ' ' + req.body.password);
+}
+
 /**
  * Render the server not found responses
  * Performs content-negotiation on the Accept HTTP header
