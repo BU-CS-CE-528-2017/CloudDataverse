@@ -21,8 +21,9 @@
                 <div class="row justify-content-sm-center">
                     <div class="col-sm-8">
                         <button ng-click="vm.AuthenticateUser()" class="btn btn-primary btn-block">Login</button>
-                        <small class="os-password-note text-muted">
-                            Your information will never be saved.
+                        <small class="os-password-note">
+                            <span class="text-muted" ng-show="!vm.WarningFlag">Your information will never be saved.</span>
+                            <span class="text-danger" ng-show="vm.WarningFlag">{{vm.LoginWarning}}</span>
                         </small>
                     </div>
                 </div>

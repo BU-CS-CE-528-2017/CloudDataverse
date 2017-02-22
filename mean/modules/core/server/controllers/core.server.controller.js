@@ -31,6 +31,16 @@ exports.renderIndex = function (req, res) {
 };
 
 /**
+ * Render the compute page
+ */
+exports.renderCompute = function (req, res) {
+    res.render('modules/core/server/views/compute', {
+        sharedConfig: JSON.stringify(config.shared)
+    });
+};
+
+
+/**
  * Render the server error page
  */
 exports.renderServerError = function (req, res) {
@@ -39,20 +49,56 @@ exports.renderServerError = function (req, res) {
   });
 };
 
+exports.listServers = function (req, res) {
+    var OSWrap = require('openstack-wrapper');
+    var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
+
+    keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
+        if (error) {
+            console.error('an error occured', error);
+        }
+        else {
+            console.log('A project specific token has been retrived', project_token);
+            res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
+
+            var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
+
+            nova.listServers(function (error, servers_array) {
+                if (error) {
+                    console.error('an error occured', error);
+                }
+                else {
+                    console.log('A list of servers have been retrived', servers_array);
+                    res.json(servers_array);
+                }
+            });
+        }
+    });
+
+
+}
+
+exports.listQuotas = function (req, res) {
+
+}
+
 exports.openStackAuth = function (req, res) {
     var OSWrap = require('openstack-wrapper');
     var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
 
     keystone.getToken(req.body.user, req.body.password, function (error, token) {
         if (error) {
-            console.error('An error occurred while authenticating the user with Open Stack.', error);
+            res.status(400);
+            res.send('Error while authenticating.');
+            console.error('An error occurred while authenticating the user with Open Stack.');
         }
         else {
-            console.log(token);
+            // creating cookie for auth token
+            res.cookie('X-Subject-Token', token.token, { maxAge: 900000, httpOnly: true });
+            res.cookie('Project-Id', token.project.id, { maxAge: 900000, httpOnly: true });
+            res.send("User authenticated");
         }
     });
-
-    res.send(req.body.user + ' ' + req.body.password);
 }
 
 /**
