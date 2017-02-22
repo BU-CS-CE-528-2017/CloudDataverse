@@ -14,6 +14,17 @@ module.exports = {
       js: [
         // bower:js
 	'public/lib/jquery/dist/jquery.js',
+	'public/jstack/JSTACK.Aiakos.js',
+	'public/jstack/JSTACK.Cinder.js',
+	'public/jstack/JSTACK.Comm.js',
+	'public/jstack/JSTACK.Glance.js',
+	'public/jstack/JSTACK.JSTACK.js',
+	'public/jstack/JSTACK.Keystone.js',
+	'public/jstack/JSTACK.Murano.js',
+	'public/jstack/JSTACK.Neutron.js',
+	'public/jstack/JSTACK.Nova.js',
+	'public/jstack/JSTACK.Swift.js',
+	'public/jstack/JSTACK.Utils.js',
         'public/lib/angular/angular.js',
 	'public/lib/bootstrap/dist/js/bootstrap.js',
         'public/lib/angular-animate/angular-animate.js',
