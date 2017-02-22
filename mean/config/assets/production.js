@@ -9,13 +9,12 @@ module.exports = {
         // bower:css
         'public/lib/angular-ui-notification/dist/angular-ui-notification.min.css',
         'public/lib/bootstrap/dist/css/bootstrap.min.css',
+        'public/lib/bootstrap/dist/css/bootstrap-theme.min.css',
         // endbower
       ],
       js: [
         // bower:js
-	'public/lib/jquery/dist/jquery.js',
         'public/lib/angular/angular.min.js',
-	'public/lib/bootstrap/dist/js/bootstrap.js',
         'public/lib/angular-animate/angular-animate.min.js',
         'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
         'public/lib/angular-messages/angular-messages.min.js',
