@@ -14,6 +14,17 @@
                 .then(function (res) {
                     vm.ServerList = res.data;
                 })
+
+            $http.get('/api/list/flavors')
+                .then(function (res) {
+                    vm.Flavors = res.data;
+                })
+
+            $http.get('/api/list/images')
+            .then(function (res) {
+                vm.Images = res.data;
+            })
+
         });
 
 

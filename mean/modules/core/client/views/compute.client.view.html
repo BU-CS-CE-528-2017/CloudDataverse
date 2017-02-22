@@ -17,6 +17,39 @@
                 </tr>
             </tbody>
         </table>
+        <br />
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="display-4">Flavors</h3>
+                <table style="margin-top: 1em;" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="flavor in vm.Flavors">
+                            <th scope="row">{{flavor.name}}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <h3 class="display-4">Images</h3>
+                <table style="margin-top: 1em;" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="image in vm.Images">
+                            <th scope="row">{{image.name}}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     </div>
 </section>

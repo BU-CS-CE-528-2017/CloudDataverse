@@ -10,6 +10,8 @@ module.exports = function (app) {
     app.post('/api/auth', core.openStackAuth);
     app.get('/api/list/servers', core.listServers);
     app.get('/api/list/quotas', core.listQuotas);
+    app.get('/api/list/images', core.listImages);
+    app.get('/api/list/flavors', core.listFlavors);
 
     app.route('/compute').get(core.renderCompute);
 

@@ -79,6 +79,50 @@ exports.listServers = function (req, res) {
 }
 
 exports.listQuotas = function (req, res) {
+    var OSWrap = require('openstack-wrapper');
+    var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
+
+    var startDate = new Date();
+    startDate.setHours(0);
+    var endDate = new Date();
+    console.log('Start Date' + startDate + " --------- End Date" + endDate);
+    nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function (error, resp) {
+        if (error) {
+        }
+        else {
+            res.json(resp);
+        }
+    });
+
+}
+
+exports.listImages = function (req, res) {
+    var OSWrap = require('openstack-wrapper');
+    var nova = new OSWrap.Glance('https://glance.kaizen.massopencloud.org:9292/v2', req.cookies['X-Project-Token']);
+
+    nova.listImages(function (error, images) {
+        if (error) {
+            res.send("Could not load images");
+        }
+        else {
+            res.json(images);
+        }
+    });
+
+}
+
+exports.listFlavors = function (req, res) {
+    var OSWrap = require('openstack-wrapper');
+    var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
+
+    nova.listFlavors(function (error, flavors) {
+        if (error) {
+            res.send("Could not load flavors");
+        }
+        else {
+            res.json(flavors);
+        }
+    });
 
 }
 
