@@ -79,7 +79,7 @@ exports.listQuotas = function (req, res) {
   var startDate = new Date();
   startDate.setHours(0);
   var endDate = new Date();
-  console.log('Start Date' + startDate + " --------- End Date" + endDate);
+  console.log('Start Date' + startDate + '--------- End Date' + endDate);
   nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function (error, resp) {
     if (!error) {
       res.json(resp);
@@ -93,7 +93,7 @@ exports.listImages = function (req, res) {
 
   nova.listImages(function (error, images) {
     if (error) {
-      res.send("Could not load images");
+      res.send('Could not load images');
     } else {
       res.json(images);
     }
@@ -107,7 +107,7 @@ exports.listFlavors = function (req, res) {
 
   nova.listFlavors(function (error, flavors) {
     if (error) {
-      res.send("Could not load flavors");
+      res.send('Could not load flavors');
     } else {
       res.json(flavors);
     }
@@ -128,7 +128,7 @@ exports.openStackAuth = function (req, res) {
       // creating cookie for auth token
       res.cookie('X-Subject-Token', token.token, { maxAge: 900000, httpOnly: true });
       res.cookie('Project-Id', token.project.id, { maxAge: 900000, httpOnly: true });
-      res.send("User authenticated");
+      res.send('User authenticated');
     }
   });
 };
