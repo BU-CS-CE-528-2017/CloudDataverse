@@ -26,7 +26,7 @@ module.exports = {
         'public/jstack/JSTACK.Swift.js',
         'public/jstack/JSTACK.Utils.js',
         'public/lib/angular/angular.min.js',
-	'public/lib/bootstrap/dist/js/bootstrap.js',
+	    'public/lib/bootstrap/dist/js/bootstrap.js',
         'public/lib/angular-animate/angular-animate.min.js',
         'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
         'public/lib/angular-messages/angular-messages.min.js',
