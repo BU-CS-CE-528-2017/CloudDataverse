@@ -67,29 +67,28 @@ exports.listServers = function (req, res) {
         }
         else {
           console.log('A list of servers have been retrived', servers_array);
-            res.json(servers_array);
-          }
-        });
-      }
+          res.json(servers_array);
+        }
+      });
+    }
   });
-}
+};
 
 exports.listQuotas = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
+  var OSWrap = require('openstack-wrapper');
+  var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
 
-    var startDate = new Date();
-    startDate.setHours(0);
-    var endDate = new Date();
-    console.log('Start Date' + startDate + " --------- End Date" + endDate);
-    nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function (error, resp) {
-        if (error) {
-        }
-        else {
-            res.json(resp);
-        }
-    });
-
+  var startDate = new Date();
+  startDate.setHours(0);
+  var endDate = new Date();
+  console.log('Start Date' + startDate + " --------- End Date" + endDate);
+  nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function (error, resp) {
+    if (error) {
+    }
+    else {
+      res.json(resp);
+      }
+  });
 }
 
 exports.listImages = function (req, res) {
