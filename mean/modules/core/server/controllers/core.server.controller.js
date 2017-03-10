@@ -55,8 +55,7 @@ exports.listServers = function (req, res) {
   keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
     if (error) {
       console.error('an error occured', error);
-    }
-    else {
+    } else {
       console.log('A project specific token has been retrived', project_token);
       res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
       var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
@@ -64,8 +63,7 @@ exports.listServers = function (req, res) {
       nova.listServers(function (error, servers_array) {
         if (error) {
           console.error('an error occured', error);
-        }
-        else {
+        } else {
           console.log('A list of servers have been retrived', servers_array);
           res.json(servers_array);
         }
@@ -96,8 +94,7 @@ exports.listImages = function (req, res) {
   nova.listImages(function (error, images) {
     if (error) {
         res.send("Could not load images");
-    }
-    else {
+    } else {
         res.json(images);
     }
   });
@@ -111,8 +108,7 @@ exports.listFlavors = function (req, res) {
   nova.listFlavors(function (error, flavors) {
     if (error) {
       res.send("Could not load flavors");
-    }
-    else {
+    } else {
       res.json(flavors);
     }
   });
@@ -128,8 +124,7 @@ exports.openStackAuth = function (req, res) {
       res.status(400);
       res.send('Error while authenticating.');        
       console.error('An error occurred while authenticating the user with Open Stack.');
-    }
-    else {
+    } else {
       // creating cookie for auth token
       res.cookie('X-Subject-Token', token.token, { maxAge: 900000, httpOnly: true });
       res.cookie('Project-Id', token.project.id, { maxAge: 900000, httpOnly: true });
