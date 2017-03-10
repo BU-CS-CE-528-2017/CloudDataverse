@@ -34,9 +34,9 @@ exports.renderIndex = function (req, res) {
  * Render the compute page
  */
 exports.renderCompute = function (req, res) {
-    res.render('modules/core/server/views/compute', {
-        sharedConfig: JSON.stringify(config.shared)
-    });
+  res.render('modules/core/server/views/compute', {
+      sharedConfig: JSON.stringify(config.shared)
+  });
 };
 
 
@@ -50,28 +50,27 @@ exports.renderServerError = function (req, res) {
 };
 
 exports.listServers = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
+  var OSWrap = require('openstack-wrapper');
+  var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
 
-    keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
-        if (error) {
-            console.error('an error occured', error);
-        }
-        else {
-            console.log('A project specific token has been retrived', project_token);
-            res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
+  keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
+      if (error) {
+          console.error('an error occured', error);
+      }
+      else {
+          console.log('A project specific token has been retrived', project_token);
+          res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
+          var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
 
-            var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
-
-            nova.listServers(function (error, servers_array) {
-                if (error) {
-                    console.error('an error occured', error);
-                }
-                else {
-                    console.log('A list of servers have been retrived', servers_array);
-                    res.json(servers_array);
-                }
-            });
+          nova.listServers(function (error, servers_array) {
+              if (error) {
+                  console.error('an error occured', error);
+              }
+              else {
+                  console.log('A list of servers have been retrived', servers_array);
+                  res.json(servers_array);
+              }
+          });
         }
     });
 
