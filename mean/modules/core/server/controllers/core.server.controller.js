@@ -85,7 +85,7 @@ exports.listQuotas = function (req, res) {
       res.json(resp);
     }
   });
-}
+};
 
 exports.listImages = function (req, res) {
   var OSWrap = require('openstack-wrapper');
@@ -93,13 +93,13 @@ exports.listImages = function (req, res) {
 
   nova.listImages(function (error, images) {
     if (error) {
-        res.send("Could not load images");
+      res.send("Could not load images");
     } else {
-        res.json(images);
+      res.json(images);
     }
   });
 
-}
+};
 
 exports.listFlavors = function (req, res) {
   var OSWrap = require('openstack-wrapper');
@@ -122,7 +122,7 @@ exports.openStackAuth = function (req, res) {
   keystone.getToken(req.body.user, req.body.password, function (error, token) {
     if (error) {
       res.status(400);
-      res.send('Error while authenticating.');        
+      res.send('Error while authenticating.');
       console.error('An error occurred while authenticating the user with Open Stack.');
     } else {
       // creating cookie for auth token
