@@ -1,6 +1,6 @@
 <section ng-controller="ComputeController as vm" class="jumbotron">
     <div class="container">
-        <h1 class="jumbotron-heading">OpenStack Instances</h1>
+        <!--<h1 class="jumbotron-heading">OpenStack Instances</h1>
         <table style="margin-top: 1em;" class="table table-bordered">
             <thead>
                 <tr>
@@ -17,144 +17,66 @@
                 </tr>
             </tbody>
         </table>
-        <br />
+        <br />-->
         <form>
-            <h4 style="font-weight: 200;">Node Group Template Configuration</h4>
-            <hr />
+            <h4 style="font-weight: 200; margin-top: 0em;">General Configuration</h4>
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label for="masterName">Master Node Group Template Name</label>
-                        <input ng-model="vm.MasterTemplate.Name" required type="text" class="form-control" id="masterName" placeholder="master" aria-describedby="masterName">
+                        <label>Select Plugin</label>
+                        <select ng-init="vm.Cluster.Plugin = 1" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.id as plugin.name for plugin in vm.Plugins"></select>
+                        <small ng-if="vm.Cluster.Plugin === 1">
+                            Applications: namenode, yarn resourcemanager, oozie, hiveserver
+                        </small>
+                        <small ng-if="vm.Cluster.Plugin === 2">
+                            Applications: zookeeper, nimbus, supervisor
+                        </small>
+                        <small ng-if="vm.Cluster.Plugin === 3">
+                            Applications: namenode, master
+                        </small>
                     </div>
-                    <div class="form-group">
-                        <label for="flavorSelect">Select Flavor</label>
-                        <select required ng-model="vm.MasterTemplate.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors" class="form-control" id="flavorSelect"></select>
-                    </div>
-                    <fieldset>
-                        <legend>Processes</legend>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-init="vm.MasterTemplate.Processes['namenode'] = true" ng-model="vm.MasterTemplate.Processes['namenode']" value="">namenode</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-model="vm.MasterTemplate.Processes['datanode']" value="">datanode</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-init="vm.MasterTemplate.Processes['oozle'] = true" ng-model="vm.MasterTemplate.Processes['oozle']" value="">oozle</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-init="vm.MasterTemplate.Processes['resourcemanager'] = true" ng-model="vm.MasterTemplate.Processes['resourcemanager']" value="">resourcemanager</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-model="vm.MasterTemplate.Processes['nodemanager']" value="">nodemanager</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-init="vm.MasterTemplate.Processes['historymanager'] = true" ng-model="vm.MasterTemplate.Processes['historyserver']" value="">historyserver</label>
-                        </div>
-                    </fieldset>
                 </div>
-
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label for="workerName">Worker Node Group Template Name</label>
-                        <input ng-model="vm.NodeTemplate.Name" required type="text" class="form-control" id="workerName" placeholder="worker" aria-describedby="workerName">
+                        <label>Cluster Name</label>
+                        <input class="form-control" required ng-model="vm.Cluster.Name" placeholder="My cluster" type="text" />
                     </div>
+                </div>
+            </div>
+            <br>
+            <h4 style="font-weight: 200;">Hardware Configuration</h4>
+            <div class="row">
+                <div class="col-sm-9">
                     <div class="form-group">
-                        <label for="flavorSelect">Select Flavor</label>
-                        <select required ng-model="vm.NodeTemplate.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors" class="form-control" id="flavorSelect"></select>
+                        <label>Instance Type</label>
+                        <select class="form-control" required ng-model="vm.Cluster.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors"></select>
                     </div>
-                    <fieldset>
-                        <legend>Processes</legend>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-model="vm.NodeTemplate.Processes['namenode']" value="">namenode</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-init="vm.NodeTemplate.Processes['datanode'] = true" ng-model="vm.NodeTemplate.Processes['datanode']" value="">datanode</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-model="vm.NodeTemplate.Processes['oozle']" value="">oozle</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-model="vm.NodeTemplate.Processes['resourcemanager']" value="">resourcemanager</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-init="vm.NodeTemplate.Processes['nodemanager'] = true" ng-model="vm.NodeTemplate.Processes['nodemanager']" value="">nodemanager</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" ng-model="vm.NodeTemplate.Processes['historyserver']" value="">historyserver</label>
-                        </div>
-                    </fieldset>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>Number of Instances</label>
+                        <input ng-change="vm.VerifyClusterCount()" required ng-init="vm.Cluster.InstanceCount = 3" class="form-control" type="number" ng-model="vm.Cluster.InstanceCount" />
+                        <small>(1 master and {{vm.Cluster.NodeCount}} nodes)</small>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <h4 style="font-weight: 200;">Security and Access</h4>
+            <div class="row">
+                <div class="col-sm-9">
+                    <div class="form-group">
+                        <label>Key Pair</label>
+                        <select class="form-control" required ng-model="vm.Cluster.KeyPair" ng-options="kp.id as kp.name for kp in vm.KeyPairs"></select>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <a href="" ng-click="vm.LaunchCluster()" style="margin-top: 2em;" class="btn btn-primary btn-block">Launch Cluster</a>
+                    </div>
                 </div>
             </div>
         </form>
 
-        <form>
-            <h4 style="font-weight: 200; margin-top: 1em;">Cluster Template Configuration</h4>
-            <div class="row">
-                <div class="col-sm-12">
-                    <hr />
-                    <div class="form-group">
-                        <label for="workerName">Cluster Template Name</label>
-                        <input ng-model="vm.ClusterTemplate.Name" required type="text" class="form-control" id="workerName" placeholder="cluster" aria-describedby="workerName">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <label>Group Name</label>
-                    <input ng-model="vm.Cluster.MasterGroupName" required class="form-control" />
-                </div>
-                <div class="col-sm-4">
-                    <label>Template</label>
-                    <input required readonly ng-model="vm.MasterTemplate.Name" class="form-control" />
-                </div>
-                <div class="col-sm-4">
-                    <label>Count</label>
-                    <input ng-model="vm.Cluster.MasterCount" ng-init="vm.Cluster.MasterCount = 1" required type="number" class="form-control" />
-                </div>
-            </div>
-            <div style="margin-top: 1em;" class="row">
-                <div class="col-sm-4">
-                    <input ng-model="vm.Cluster.WorkerGroupName" required class="form-control" />
-                </div>
-                <div class="col-sm-4">
-                    <input required readonly ng-model="vm.NodeTemplate.Name" class="form-control" />
-                </div>
-                <div class="col-sm-4">
-                    <input ng-model="vm.Cluster.WorkerCount" ng-init="vm.Cluster.WorkerCount = 1" required type="number" class="form-control" />
-                </div>
-            </div>
-        </form>
-
-        <form>
-            <h4 style="font-weight: 200; margin-top: 1em;">Launch Cluster</h4>
-            <div class="row">
-                <div class="col-sm-12">
-                    <hr />
-                    <div class="form-group">
-                        <label for="workerName">Cluster Name</label>
-                        <input ng-model="vm.Cluster.Name" required type="text" class="form-control" id="workerName" placeholder="bigcluster" aria-describedby="workerName">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label>Base Image</label>
-                    <select class="form-control" ng-model="vm.Cluster.BaseImage" ng-options="image.id as image.name for image in vm.Images"></select>
-                </div>
-                <div class="col-sm-6">
-                    <label>Keypair</label>
-                    <select ng-model="vm.Cluster.Keypair" required type="text" class="form-control" />
-                </div>
-            </div>
-            <div style="margin-top: 1em;" class="row">
-                <div class="col-sm-12">
-                    <div style="float: right;">
-                        <button class="btn btn-primary">Launch</button>
-                    </div>
-                </div>
-            </div>
-        </form>
     </div>
 </section>
 
