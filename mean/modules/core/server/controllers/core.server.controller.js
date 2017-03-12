@@ -72,6 +72,20 @@ exports.listServers = function (req, res) {
   });
 };
 
+exports.listKeyPairs = function (req, res) {
+    var OSWrap = require('openstack-wrapper');
+    var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
+
+    nova.listKeyPairs(function (error, resp) {
+        if (!error) {
+            res.json(resp);
+        }
+        else {
+            console.error('Could not retrieve key pairs');
+        }
+    });
+}
+
 exports.listQuotas = function (req, res) {
   var OSWrap = require('openstack-wrapper');
   var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);

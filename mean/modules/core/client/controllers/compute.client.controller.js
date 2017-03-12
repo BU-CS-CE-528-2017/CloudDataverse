@@ -29,6 +29,11 @@
 
         }
 
+        $http.get('/api/list/keypairs')
+            .then(function (res) {
+                vm.KeyPairs = res.data;
+            })
+
         $http.get('/api/list/servers')
           .then(function (res) {
               vm.ServerList = res.data;

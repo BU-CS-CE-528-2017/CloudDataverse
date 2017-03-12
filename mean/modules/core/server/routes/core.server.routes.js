@@ -11,6 +11,7 @@ module.exports = function (app) {
   app.get('/api/list/quotas', core.listQuotas);
   app.get('/api/list/images', core.listImages);
   app.get('/api/list/flavors', core.listFlavors);
+  app.get('/api/list/keypairs', core.listKeyPairs);
 
   app.route('/compute').get(core.renderCompute);
 
