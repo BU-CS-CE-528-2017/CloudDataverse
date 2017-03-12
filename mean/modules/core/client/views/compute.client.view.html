@@ -1,5 +1,5 @@
 <section ng-controller="ComputeController as vm" class="jumbotron">
-    <div class="container">
+    <div style="margin-top: -3em;" class="container">
         <!--<h1 class="jumbotron-heading">OpenStack Instances</h1>
         <table style="margin-top: 1em;" class="table table-bordered">
             <thead>
@@ -19,61 +19,70 @@
         </table>
         <br />-->
         <form>
-            <h4 style="font-weight: 200; margin-top: 0em;">General Configuration</h4>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Select Plugin</label>
-                        <select ng-init="vm.Cluster.Plugin = 1" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.id as plugin.name for plugin in vm.Plugins"></select>
-                        <small ng-if="vm.Cluster.Plugin === 1">
-                            Applications: namenode, yarn resourcemanager, oozie, hiveserver
-                        </small>
-                        <small ng-if="vm.Cluster.Plugin === 2">
-                            Applications: zookeeper, nimbus, supervisor
-                        </small>
-                        <small ng-if="vm.Cluster.Plugin === 3">
-                            Applications: namenode, master
-                        </small>
+            <button ng-click="vm.ConfigMode = !vm.ConfigMode" type="button" class="btn btn-primary">
+                <span ng-show="!vm.ConfigMode">Show Advanced Settings</span>
+                <span ng-show="vm.ConfigMode">Show Basic Settings</span>
+            </button>
+            <div ng-show="!vm.ConfigMode" style="margin-top: 1em;" id="basic-mode">
+                <h4 style="font-weight: 200; margin-top: 0em;">General Configuration</h4>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Select Plugin</label>
+                            <select ng-init="vm.Cluster.Plugin = 1" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.id as plugin.name for plugin in vm.Plugins"></select>
+                            <small ng-if="vm.Cluster.Plugin === 1">
+                                Applications: namenode, yarn resourcemanager, oozie, hiveserver
+                            </small>
+                            <small ng-if="vm.Cluster.Plugin === 2">
+                                Applications: zookeeper, nimbus, supervisor
+                            </small>
+                            <small ng-if="vm.Cluster.Plugin === 3">
+                                Applications: namenode, master
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Cluster Name</label>
+                            <input class="form-control" required ng-model="vm.Cluster.Name" placeholder="My cluster" type="text" />
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Cluster Name</label>
-                        <input class="form-control" required ng-model="vm.Cluster.Name" placeholder="My cluster" type="text" />
+                <br>
+                <h4 style="font-weight: 200;">Hardware Configuration</h4>
+                <div class="row">
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <label>Instance Type</label>
+                            <select class="form-control" required ng-model="vm.Cluster.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors"></select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Number of Instances</label>
+                            <input ng-change="vm.VerifyClusterCount()" required ng-init="vm.Cluster.InstanceCount = 3" class="form-control" type="number" ng-model="vm.Cluster.InstanceCount" />
+                            <small>(1 master and {{vm.Cluster.NodeCount}} nodes)</small>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <h4 style="font-weight: 200;">Security and Access</h4>
+                <div class="row">
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <label>Key Pair</label>
+                            <select class="form-control" required ng-model="vm.Cluster.KeyPair" ng-options="kp.id as kp.name for kp in vm.KeyPairs"></select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <a href="" ng-click="vm.LaunchCluster()" style="margin-top: 2em;" class="btn btn-primary btn-block">Launch Cluster</a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <br>
-            <h4 style="font-weight: 200;">Hardware Configuration</h4>
-            <div class="row">
-                <div class="col-sm-9">
-                    <div class="form-group">
-                        <label>Instance Type</label>
-                        <select class="form-control" required ng-model="vm.Cluster.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors"></select>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label>Number of Instances</label>
-                        <input ng-change="vm.VerifyClusterCount()" required ng-init="vm.Cluster.InstanceCount = 3" class="form-control" type="number" ng-model="vm.Cluster.InstanceCount" />
-                        <small>(1 master and {{vm.Cluster.NodeCount}} nodes)</small>
-                    </div>
-                </div>
-            </div>
-            <br />
-            <h4 style="font-weight: 200;">Security and Access</h4>
-            <div class="row">
-                <div class="col-sm-9">
-                    <div class="form-group">
-                        <label>Key Pair</label>
-                        <select class="form-control" required ng-model="vm.Cluster.KeyPair" ng-options="kp.id as kp.name for kp in vm.KeyPairs"></select>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <a href="" ng-click="vm.LaunchCluster()" style="margin-top: 2em;" class="btn btn-primary btn-block">Launch Cluster</a>
-                    </div>
-                </div>
+            <div ng-show="!vm.ConfigMode" id="advanced-mode">
+
             </div>
         </form>
 

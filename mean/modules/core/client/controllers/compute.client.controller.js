@@ -5,6 +5,7 @@
       .controller('ComputeController', ComputeController);
     function ComputeController($scope, $http) {
         var vm = this;
+        vm.ConfigMode = 0;
         vm.ServerList = {};
         vm.Cluster = {};
         vm.Cluster.NodeCount = 2;
