@@ -99,6 +99,8 @@
               vm.ServerList = res.data;
               var flavors = {};
               var plugins = {};
+              var keypairs = {};
+              var networks = {};
 
               $http.get('/api/list/flavors')
                 .then(function (res) {
@@ -111,11 +113,21 @@
 
                             $http.get('/api/list/keypairs')
                                 .then(function (res) {
-                                    vm.KeyPairs = res.data;
-                                    vm.Cluster.KeyPair = vm.KeyPairs[0].name;
+                                    keypairs = res.data;
 
-                                    vm.Flavors = flavors;
-                                    vm.Plugins = plugins;
+                                    $http.get('/api/list/networks')
+                                        .then(function (res) {
+                                            vm.KeyPairs = keypairs;
+                                            vm.Cluster.KeyPair = vm.KeyPairs[0].name;
+
+                                            vm.Networks = res.data;
+                                            vm.Networks = vm.Networks.splice(1, 1);
+                                            vm.Cluster.Network = vm.Networks[0].id;
+
+                                            vm.Flavors = flavors;
+                                            vm.Plugins = plugins;
+                                        })
+
                                 });
                         });
                 });
