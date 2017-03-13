@@ -74,6 +74,94 @@ exports.listServers = function (req, res) {
   });
 };
 
+exports.launchInstance = function (req, res) {
+    var request = require('request');
+
+    var masterTemplate = {
+        'plugin_name': req.body.Cluster.Plugin,
+        'node_processes': [
+            'namenode',
+            'resourcemanager',
+            'oozie',
+            'historyserver'
+        ],
+        'name': req.body.Name + '_MASTER',
+        'flavor_id': req.body.Flavor,
+        'use_autoconfig': true,
+        'auto_security_group': true,
+        'availability_zone': 'nova'
+    };
+
+    var workerTemplate = {
+        'plugin_name': req.body.Plugin,
+        'node_processes': [
+            'datanode',
+            'resourcemanager'
+        ],
+        'name': req.body.Name + '_WORKER',
+        'flavor_id': req.body.Flavor,
+        'use_autoconfig': true,
+        'auto_security_group': true,
+        'availability_zone': 'nova'
+    };
+
+    var clusterTemplate = {
+        'plugin_name': req.body.Plugin,
+        'node_groups': [
+            {
+                'name': 'master',
+                'count': 1,
+                'node_group_template_id': ''
+            },
+            {
+                'name': 'worker',
+                'count': req.body.InstanceCount,
+                'node_group_template_id': ''
+            }
+
+        ],
+        'name': vm.Cluster.Name
+    };
+
+    var launchTemplate = {
+        'plugin_name': req.body.Plugin,
+        'cluster_template_id': '',
+        'default_image_id': '',
+        'user_keypair_id': req.body.KeyPair,
+        'name': req.body.Name + '_CLUSTER',
+        'neutron_management_network': ''
+    };
+
+    /* REST ENDPOINT AND HEADER OBJECT */
+    var createNodeEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/node-group-templates';
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    /* HTTP POST OPTIONS */
+    var options = {
+        url: createNodeEndpoint,
+        headers: headers
+    };
+
+    /* CREATE MASTER NODE TEMPLATE */
+    function createMaster(error, response, body) {
+        /* Set Master Template Id */
+        clusterTemplate.node_groups[0].node_group_template_id = '';
+    }
+
+    request.post(options, masterTemplate, createMaster);
+
+    /* CREATE WORKER NODE TEMPLATE */
+    function createWorker(error, response, body) {
+        /* Set Master Template Id */
+        clusterTemplate.node_groups[1].node_group_template_id = '';
+    }
+
+    request.post(options, workerTemplate, createWorker);
+}
+
 exports.listKeyPairs = function (req, res) {
   var OSWrap = require('openstack-wrapper');
   var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
