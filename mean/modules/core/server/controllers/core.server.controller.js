@@ -85,7 +85,7 @@ exports.listKeyPairs = function (req, res) {
       console.error('Could not retrieve key pairs');
     }
   });
-}
+};
 
 exports.listPlugins = function (req, res) {
   var request = require('request');
