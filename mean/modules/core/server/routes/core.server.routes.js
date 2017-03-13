@@ -12,7 +12,7 @@ module.exports = function (app) {
   app.get('/api/list/images', core.listImages);
   app.get('/api/list/flavors', core.listFlavors);
   app.get('/api/list/keypairs', core.listKeyPairs);
-
+  app.get('/api/list/plugins', core.listPlugins);
   app.route('/compute').get(core.renderCompute);
 
   // Return a 404 for all undefined api, module or lib routes

@@ -29,15 +29,15 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>Select Plugin</label>
-                            <select ng-init="vm.Cluster.Plugin = 1" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.id as plugin.name for plugin in vm.Plugins"></select>
-                            <small ng-if="vm.Cluster.Plugin === 1">
+                            <select ng-init="vm.Cluster.Plugin = 'vanilla'" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.name as plugin.title for plugin in vm.Plugins"></select>
+                            <small ng-if="vm.Cluster.Plugin == 'vanilla'">
                                 Applications: namenode, yarn resourcemanager, oozie, hiveserver
                             </small>
-                            <small ng-if="vm.Cluster.Plugin === 2">
-                                Applications: zookeeper, nimbus, supervisor
+                            <small ng-if="vm.Cluster.Plugin == 'spark'">
+                                Applications: namenode, master                                
                             </small>
-                            <small ng-if="vm.Cluster.Plugin === 3">
-                                Applications: namenode, master
+                            <small ng-if="vm.Cluster.Plugin == 'storm'">
+                                Applications: zookeeper, nimbus, supervisor
                             </small>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                     <div class="col-sm-9">
                         <div class="form-group">
                             <label>Instance Type</label>
-                            <select class="form-control" required ng-model="vm.Cluster.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors"></select>
+                            <select ng-init="vm.Cluster.Flavor = '5'" class="form-control" required ng-model="vm.Cluster.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors"></select>
                         </div>
                     </div>
                     <div class="col-sm-3">

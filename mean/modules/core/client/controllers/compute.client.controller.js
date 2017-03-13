@@ -9,7 +9,6 @@
         vm.ServerList = {};
         vm.Cluster = {};
         vm.Cluster.NodeCount = 2;
-        vm.Plugins = [{ id: 1, name: 'Hadoop' }, { id: 2, name: 'Storm' }, { id: 3, name: 'Spark' }];
 
         vm.VerifyClusterCount = function () {
             if (vm.Cluster.InstanceCount < 0) {
@@ -29,24 +28,34 @@
 
         }
 
-        $http.get('/api/list/keypairs')
-            .then(function (res) {
-                vm.KeyPairs = res.data;
-            })
-
         $http.get('/api/list/servers')
           .then(function (res) {
+
+              if (res.data == 'error')
+                  window.location.href = '/';
+
               vm.ServerList = res.data;
+              var flavors = {};
+              var plugins = {};
+
               $http.get('/api/list/flavors')
                 .then(function (res) {
-                    vm.Flavors = res.data;
+                    flavors = res.data;
 
-                    if (!vm.Flavors.length)
-                        document.location.href = "/";
-                    //$http.get('/api/list/images')
-                    //  .then(function (res) {
-                    //      vm.Images = res.data;
-                    //  });
+                    $http.get('/api/list/plugins')
+                        .then(function (res) {
+                            var resp = JSON.parse(res.data);
+                            plugins = resp.plugins;
+
+                            $http.get('/api/list/keypairs')
+                                .then(function (res) {
+                                    vm.KeyPairs = res.data;
+                                    vm.Cluster.KeyPair = vm.KeyPairs[0].name;
+
+                                    vm.Flavors = flavors;
+                                    vm.Plugins = plugins;
+                                });
+                        });
                 });
           });
     }

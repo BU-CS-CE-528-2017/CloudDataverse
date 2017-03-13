@@ -54,7 +54,8 @@ exports.listServers = function (req, res) {
 
   keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
     if (error) {
-      console.error('an error occured', error);
+        console.error('an error occured', error);
+        res.send('error');
     } else {
       console.log('A project specific token has been retrived', project_token);
       res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
@@ -62,7 +63,7 @@ exports.listServers = function (req, res) {
 
       nova.listServers(function (error, servers_array) {
         if (error) {
-          console.error('an error occured', error);
+            console.error('an error occured', error);
         } else {
           console.log('A list of servers have been retrived', servers_array);
           res.json(servers_array);
@@ -84,6 +85,27 @@ exports.listKeyPairs = function (req, res) {
             console.error('Could not retrieve key pairs');
         }
     });
+}
+
+exports.listPlugins = function (req, res) {
+    var request = require('request');
+    var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/plugins';
+    console.log('Sahara URL: ' + sahara);
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    var options = {
+        url: sahara,
+        headers: headers
+    };
+
+    function listPlugins(error, response, body) {
+        res.json(body);
+    }
+
+    request.get(options, listPlugins);
 }
 
 exports.listQuotas = function (req, res) {
