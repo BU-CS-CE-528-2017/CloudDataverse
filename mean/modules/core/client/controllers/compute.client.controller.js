@@ -11,7 +11,7 @@
         vm.Cluster.NodeCount = 2;
 
         vm.VerifyClusterCount = function () {
-            if (vm.Cluster.InstanceCount < 0) {
+            if (vm.Cluster.InstanceCount <= 0) {
                 vm.Cluster.InstanceCount = 1;
                 vm.Cluster.NodeCount = 0;
             }

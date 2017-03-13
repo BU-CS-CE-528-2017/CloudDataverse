@@ -64,6 +64,7 @@ exports.listServers = function (req, res) {
       nova.listServers(function (error, servers_array) {
         if (error) {
             console.error('an error occured', error);
+            res.send('error');
         } else {
           console.log('A list of servers have been retrived', servers_array);
           res.json(servers_array);
