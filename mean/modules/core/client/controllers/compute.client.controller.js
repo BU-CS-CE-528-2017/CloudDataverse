@@ -25,6 +25,68 @@
         }
 
         vm.LaunchCluster = function () {
+            var masterTemplate = {
+                'plugin_name': vm.Cluster.Plugin,
+                'node_processes': [
+                    'namenode',
+                    'resourcemanager',
+                    'oozie',
+                    'historyserver'
+                ],
+                'name': vm.Cluster.Name + '_MASTER',
+                'flavor_id': vm.Cluster.Flavor,
+                'use_autoconfig': true,
+                'auto_security_group': true,
+                'availability_zone': 'nova'
+            };
+
+            var workerTemplate = {
+                'plugin_name': vm.Cluster.Plugin,
+                'node_processes': [
+                    'datanode',
+                    'resourcemanager'
+                ],
+                'name': vm.Cluster.Name + '_WORKER',
+                'flavor_id': vm.Cluster.Flavor,
+                'use_autoconfig': true,
+                'auto_security_group': true,
+                'availability_zone': 'nova'
+            };
+
+            /* Data Processing API Post Request - Create Master Template */
+
+            /* Data Processing API Post Request - Create Worker Template */
+
+            var clusterTemplate = {
+                'plugin_name': vm.Cluster.Plugin,
+                'node_groups':[
+                    {
+                        'name': 'master',
+                        'count': 1,
+                        'node_group_template_id': ''
+                    },
+                    {
+                        'name': 'worker',
+                        'count': vm.Cluster.InstanceCount - 1,
+                        'node_group_template_id': ''
+                    }
+
+                ],
+                'name': vm.Cluster.Name
+            };
+
+            var launchTemplate = {
+                'plugin_name': vm.Cluster.Plugin,
+                'cluster_template_id': '',
+                'default_image_id': '',
+                'user_keypair_id': vm.Cluster.KeyPair,
+                'name': vm.Cluster.Name + '_CLUSTER',
+                'neutron_management_network': ''
+            };
+
+            /* Data Processing API Post Request - Launch Cluster */
+
+
 
         }
 
