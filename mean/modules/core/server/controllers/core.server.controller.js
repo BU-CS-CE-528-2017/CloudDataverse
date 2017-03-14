@@ -78,54 +78,61 @@ exports.launchInstance = function(req, res) {
   var request = require('request');
 
   var masterTemplate = {
-    'plugin_name': req.body.Cluster.Plugin,
+    'plugin_name': req.body.plugin_name,
+    'hadoop_version':'2.7.1',
     'node_processes': [
       'namenode',
       'resourcemanager',
       'oozie',
       'historyserver'
     ],
-    'name': req.body.Name + '_MASTER',
-    'flavor_id': req.body.Flavor,
+    'name': req.body.name + 'MASTER',
+    'flavor_id': req.body.flavor,
     'use_autoconfig': true,
     'auto_security_group': true,
     'availability_zone': 'nova'
   };
 
+  console.log(masterTemplate);
+
   var workerTemplate = {
-    'plugin_name': req.body.Plugin,
+    'plugin_name': req.body.plugin_name,
+    'hadoop_version': '2.7.1',
     'node_processes': [
       'datanode',
       'resourcemanager'
     ],
-    'name': req.body.Name + '_WORKER',
-    'flavor_id': req.body.Flavor,
+    'name': req.body.name + 'WORKER',
+    'flavor_id': req.body.flavor,
     'use_autoconfig': true,
     'auto_security_group': true,
     'availability_zone': 'nova'
   };
 
+  console.log(workerTemplate);
+
+
   var clusterTemplate = {
-    'plugin_name': req.body.Plugin,
+    'plugin_name': req.body.plugin_name,
     'node_groups': [{
       'name': 'master',
       'count': 1,
       'node_group_template_id': ''
     }, {
       'name': 'worker',
-      'count': req.body.InstanceCount,
+      'count': req.body.count,
       'node_group_template_id': ''
     }],
-    'name': vm.Cluster.Name
+    'name': req.body.name
   };
 
   var launchTemplate = {
-    'plugin_name': req.body.Plugin,
+    'plugin_name': req.body.plugin_name,
     'cluster_template_id': '',
     'default_image_id': '',
-    'user_keypair_id': req.body.KeyPair,
-    'name': req.body.Name + '_CLUSTER',
-    'neutron_management_network': ''
+    'user_keypair_id': req.body.user_keypair_id,
+    'name': req.body.name + 'CLUSTER',
+    'neutron_management_network': req.body.network
   };
 
   /* REST ENDPOINT AND HEADER OBJECT */
@@ -135,27 +142,44 @@ exports.launchInstance = function(req, res) {
     'X-Auth-Token': req.cookies['X-Project-Token']
   };
 
-  /* HTTP POST OPTIONS */
-  var options = {
-    url: createNodeEndpoint,
-    headers: headers
-  };
+  var constructNodeTemplates = new Promise(function (resolve, reject) {
+      request({
+          url: createNodeEndpoint,
+          method: 'POST',
+          headers: headers,
+          json: masterTemplate
+      }, function (error, response, body) {
+          if (error) {
+              console.log(error);
+          } else {
+              console.log(response.statusCode, body);
+              clusterTemplate.node_groups[0].node_group_template_id = body.node_group_template.id;
+          }
+      });
 
-  /* CREATE MASTER NODE TEMPLATE */
-  function createMaster(error, response, body) {
-    /* Set Master Template Id */
-    clusterTemplate.node_groups[0].node_group_template_id = '';
-  }
+      request({
+          url: createNodeEndpoint,
+          method: 'POST',
+          headers: headers,
+          json: workerTemplate
+      }, function (error, response, body) {
+          if (error) {
+              console.log(error);
+          } else {
+              console.log(response.statusCode, body);
+              clusterTemplate.node_groups[1].node_group_template_id = body.node_group_template.id;
+              resolve('Node group templates created successfully.');
+          }
+      });
 
-  request.post(options, masterTemplate, createMaster);
+  });
 
-  /* CREATE WORKER NODE TEMPLATE */
-  function createWorker(error, response, body) {
-    /* Set Master Template Id */
-    clusterTemplate.node_groups[1].node_group_template_id = '';
-  }
+  constructNodeTemplates.then(function (result) {
+      console.log(clusterTemplate);
+      console.log(result);
+      res.send('Success');
+  });
 
-  request.post(options, workerTemplate, createWorker);
 };
 
 exports.listKeyPairs = function(req, res) {
