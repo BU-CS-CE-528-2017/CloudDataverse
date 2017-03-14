@@ -14,6 +14,7 @@ module.exports = function (app) {
   app.get('/api/list/keypairs', core.listKeyPairs);
   app.get('/api/list/plugins', core.listPlugins);
   app.get('/api/list/networks', core.listNetworks);
+  app.post('/api/launch', core.launchInstance);
   app.route('/compute').get(core.renderCompute);
 
   // Return a 404 for all undefined api, module or lib routes

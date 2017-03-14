@@ -20,7 +20,38 @@
         vm.Cluster.NodeCount = vm.Cluster.InstanceCount - 1;
       }
 
+    vm.LaunchCluster = function () {
+      var launchClusterPayload = {
+        'plugin_name': vm.Cluster.Plugin,
+        'name': vm.Cluster.Name,
+        'count': vm.Cluster.InstanceCount - 1,
+        'user_keypair_id': vm.Cluster.KeyPair
+      };
+
+      $http.post('/api/launch', launchClusterPayload)
+        .then(function (res) {
+
+        });
+
     }
+
+    $http.get('/api/list/servers')
+      .then(function (res) {
+
+        if (res.data == 'error')
+          window.location.href = '/';
+
+        vm.ServerList = res.data;
+        var flavors = {};
+        var plugins = {};
+        var keypairs = {};
+        var networks = {};
+  
+        $http.get('/api/list/flavors')
+          .then(function (res) {
+            flavors = res.data;
+  
+          }
 
 
     vm.LaunchCluster = function () {
