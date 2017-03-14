@@ -7,7 +7,7 @@ var validator = require('validator'),
 /**
  * Render the main application page
  */
-exports.renderIndex = function (req, res) {
+exports.renderIndex = function(req, res) {
   var safeUserObject = null;
   if (req.user) {
     safeUserObject = {
@@ -33,7 +33,7 @@ exports.renderIndex = function (req, res) {
 /**
  * Render the compute page
  */
-exports.renderCompute = function (req, res) {
+exports.renderCompute = function(req, res) {
   res.render('modules/core/server/views/compute', {
     sharedConfig: JSON.stringify(config.shared)
   });
@@ -42,17 +42,17 @@ exports.renderCompute = function (req, res) {
 /**
  * Render the server error page
  */
-exports.renderServerError = function (req, res) {
+exports.renderServerError = function(req, res) {
   res.status(500).render('modules/core/server/views/500', {
     error: 'Oops! Something went wrong...'
   });
 };
 
-exports.listServers = function (req, res) {
+exports.listServers = function(req, res) {
   var OSWrap = require('openstack-wrapper');
   var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
 
-  keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
+  keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function(error, project_token) {
     if (error) {
       console.error('an error occured', error);
       res.send('error');
@@ -61,7 +61,7 @@ exports.listServers = function (req, res) {
       res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
       var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
 
-      nova.listServers(function (error, servers_array) {
+      nova.listServers(function(error, servers_array) {
         if (error) {
           console.error('an error occured', error);
           res.send('error');
@@ -74,7 +74,7 @@ exports.listServers = function (req, res) {
   });
 };
 
-exports.launchInstance = function (req, res) {
+exports.launchInstance = function(req, res) {
   var request = require('request');
 
   var masterTemplate = {
@@ -107,18 +107,15 @@ exports.launchInstance = function (req, res) {
 
   var clusterTemplate = {
     'plugin_name': req.body.Plugin,
-    'node_groups': [
-        {
-          'name': 'master',
-          'count': 1,
-          'node_group_template_id': ''
-        },
-        {
-          'name': 'worker',
-          'count': req.body.InstanceCount,
-          'node_group_template_id': ''
-        }
-    ],
+    'node_groups': [{
+      'name': 'master',
+      'count': 1,
+      'node_group_template_id': ''
+    }, {
+      'name': 'worker',
+      'count': req.body.InstanceCount,
+      'node_group_template_id': ''
+    }],
     'name': vm.Cluster.Name
   };
 
@@ -144,9 +141,9 @@ exports.launchInstance = function (req, res) {
     headers: headers
   };
 
-    /* CREATE MASTER NODE TEMPLATE */
+  /* CREATE MASTER NODE TEMPLATE */
   function createMaster(error, response, body) {
-      /* Set Master Template Id */
+    /* Set Master Template Id */
     clusterTemplate.node_groups[0].node_group_template_id = '';
   }
 
@@ -154,18 +151,18 @@ exports.launchInstance = function (req, res) {
 
   /* CREATE WORKER NODE TEMPLATE */
   function createWorker(error, response, body) {
-      /* Set Master Template Id */
-      clusterTemplate.node_groups[1].node_group_template_id = '';
+    /* Set Master Template Id */
+    clusterTemplate.node_groups[1].node_group_template_id = '';
   }
 
   request.post(options, workerTemplate, createWorker);
 }
 
-exports.listKeyPairs = function (req, res) {
+exports.listKeyPairs = function(req, res) {
   var OSWrap = require('openstack-wrapper');
   var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
 
-  nova.listKeyPairs(function (error, resp) {
+  nova.listKeyPairs(function(error, resp) {
     if (!error) {
       res.json(resp);
     } else {
@@ -174,16 +171,16 @@ exports.listKeyPairs = function (req, res) {
   });
 };
 
-exports.listNetworks = function (req, res) {
+exports.listNetworks = function(req, res) {
   var OSWrap = require('openstack-wrapper');
   var neutron = new OSWrap.Neutron('https://neutron.kaizen.massopencloud.org:9696/v2.0', req.cookies['X-Project-Token']);
 
-  neutron.listNetworks(function (error, resp) {
+  neutron.listNetworks(function(error, resp) {
     res.json(resp);
   });
 }
 
-exports.listPlugins = function (req, res) {
+exports.listPlugins = function(req, res) {
   var request = require('request');
   var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/plugins';
   console.log('Sahara URL: ' + sahara);
@@ -204,7 +201,7 @@ exports.listPlugins = function (req, res) {
   request.get(options, listPlugins);
 };
 
-exports.listQuotas = function (req, res) {
+exports.listQuotas = function(req, res) {
   var OSWrap = require('openstack-wrapper');
   var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
 
@@ -212,18 +209,18 @@ exports.listQuotas = function (req, res) {
   startDate.setHours(0);
   var endDate = new Date();
   console.log('Start Date' + startDate + '--------- End Date' + endDate);
-  nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function (error, resp) {
+  nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function(error, resp) {
     if (!error) {
       res.json(resp);
     }
   });
 };
 
-exports.listImages = function (req, res) {
+exports.listImages = function(req, res) {
   var OSWrap = require('openstack-wrapper');
   var nova = new OSWrap.Glance('https://glance.kaizen.massopencloud.org:9292/v2', req.cookies['X-Project-Token']);
 
-  nova.listImages(function (error, images) {
+  nova.listImages(function(error, images) {
     if (error) {
       res.send('Could not load images');
     } else {
@@ -233,11 +230,11 @@ exports.listImages = function (req, res) {
 
 };
 
-exports.listFlavors = function (req, res) {
+exports.listFlavors = function(req, res) {
   var OSWrap = require('openstack-wrapper');
   var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
 
-  nova.listFlavors(function (error, flavors) {
+  nova.listFlavors(function(error, flavors) {
     if (error) {
       res.send('Could not load flavors');
     } else {
@@ -247,11 +244,11 @@ exports.listFlavors = function (req, res) {
 
 };
 
-exports.openStackAuth = function (req, res) {
+exports.openStackAuth = function(req, res) {
   var OSWrap = require('openstack-wrapper');
   var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
 
-  keystone.getToken(req.body.user, req.body.password, function (error, token) {
+  keystone.getToken(req.body.user, req.body.password, function(error, token) {
     if (error) {
       res.status(400);
       res.send('Error while authenticating.');
@@ -269,19 +266,19 @@ exports.openStackAuth = function (req, res) {
  * Render the server not found responses
  * Performs content-negotiation on the Accept HTTP header
  */
-exports.renderNotFound = function (req, res) {
+exports.renderNotFound = function(req, res) {
   res.status(404).format({
-    'text/html': function () {
+    'text/html': function() {
       res.render('modules/core/server/views/404', {
         url: req.originalUrl
       });
     },
-    'application/json': function () {
+    'application/json': function() {
       res.json({
         error: 'Path not found'
       });
     },
-    'default': function () {
+    'default': function() {
       res.send('Path not found');
     }
   });

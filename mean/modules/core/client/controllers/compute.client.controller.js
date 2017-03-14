@@ -21,7 +21,7 @@
         vm.Cluster.NodeCount = vm.Cluster.InstanceCount - 1;
       }
 
-    }
+    };
 
     vm.LaunchCluster = function() {
 
@@ -37,12 +37,12 @@
 
         });
 
-    }
+    };
 
     $http.get('/api/list/servers')
       .then(function(res) {
 
-        if (res.data == 'error')
+        if (res.data === 'error')
           window.location.href = '/';
 
         vm.ServerList = res.data;
@@ -75,7 +75,7 @@
 
                         vm.Flavors = flavors;
                         vm.Plugins = plugins;
-                      })
+                      });
 
                   });
               });
