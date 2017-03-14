@@ -29,7 +29,9 @@
         'plugin_name': vm.Cluster.Plugin,
         'name': vm.Cluster.Name,
         'count': vm.Cluster.InstanceCount - 1,
-        'user_keypair_id': vm.Cluster.KeyPair
+        'user_keypair_id': vm.Cluster.KeyPair,
+        'flavor': vm.Cluster.Flavor,
+        'network': vm.Cluster.Network
       };
 
       $http.post('/api/launch', launchClusterPayload)
