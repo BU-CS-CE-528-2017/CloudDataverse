@@ -156,7 +156,7 @@ exports.launchInstance = function(req, res) {
   }
 
   request.post(options, workerTemplate, createWorker);
-}
+};
 
 exports.listKeyPairs = function(req, res) {
   var OSWrap = require('openstack-wrapper');
@@ -178,7 +178,7 @@ exports.listNetworks = function(req, res) {
   neutron.listNetworks(function(error, resp) {
     res.json(resp);
   });
-}
+};
 
 exports.listPlugins = function(req, res) {
   var request = require('request');
