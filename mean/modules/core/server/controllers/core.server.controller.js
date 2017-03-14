@@ -87,6 +87,15 @@ exports.listKeyPairs = function (req, res) {
   });
 };
 
+exports.listNetworks = function (req, res) {
+    var OSWrap = require('openstack-wrapper');
+    var neutron = new OSWrap.Neutron('https://neutron.kaizen.massopencloud.org:9696/v2.0', req.cookies['X-Project-Token']);
+
+    neutron.listNetworks(function (error, resp) {
+        res.json(resp);
+    });
+}
+
 exports.listPlugins = function (req, res) {
   var request = require('request');
   var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/plugins';

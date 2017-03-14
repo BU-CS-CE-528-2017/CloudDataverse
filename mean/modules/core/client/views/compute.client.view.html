@@ -68,13 +68,19 @@
                 <br />
                 <h4 style="font-weight: 200;">Security and Access</h4>
                 <div class="row">
-                    <div class="col-sm-9">
+                    <div class="col-sm-5">
                         <div class="form-group">
                             <label>Key Pair</label>
                             <select class="form-control" required ng-model="vm.Cluster.KeyPair" ng-options="kp.name as kp.name for kp in vm.KeyPairs"></select>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label>Network</label>
+                            <select class="form-control" required ng-model="vm.Cluster.Network" ng-options="net.id as net.name for net in vm.Networks"></select>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
                         <div class="form-group">
                             <a href="" ng-click="vm.LaunchCluster()" style="margin-top: 2em;" class="btn btn-primary btn-block">Launch Cluster</a>
                         </div>
