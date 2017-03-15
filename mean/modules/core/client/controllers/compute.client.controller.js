@@ -37,33 +37,32 @@
 
       $http.post('/api/launch', launchClusterPayload)
         .then(function(res) {
-            if (res.data.error_name != undefined) {
-                vm.LaunchSuccess = false;
-                vm.ClusterDetails = res.data;
-            }
-            else {
-                vm.LaunchSuccess = true;
-                vm.ClusterDetails = res.data.cluster;
+          if (res.data.error_name != undefined) {
+            vm.LaunchSuccess = false;
+            vm.ClusterDetails = res.data;
+          } else {
+            vm.LaunchSuccess = true;
+            vm.ClusterDetails = res.data.cluster;
 
-                statusUpdater = setInterval(updateLaunchStatus, 1000);
-                
-            }
+            statusUpdater = setInterval(updateLaunchStatus, 1000);
+
+          }
         });
 
     };
 
-    var updateLaunchStatus = function () {
-        $http.get('/api/status/cluster/' + vm.ClusterDetails.id)
-            .then(function (res) {
-                var cluster = JSON.parse(res.data);
-                cluster = cluster.cluster;
-                vm.ClusterDetails.status = cluster.status;
+    var updateLaunchStatus = function() {
+      $http.get('/api/status/cluster/' + vm.ClusterDetails.id)
+        .then(function(res) {
+          var cluster = JSON.parse(res.data);
+          cluster = cluster.cluster;
+          vm.ClusterDetails.status = cluster.status;
 
-                if (vm.ClusterDetails.status == 'Active') {
-                    clearInterval(statusUpdater)
-                    $('#cluster-progress').removeClass('progress-bar-animated').removeClass('progress-bar-striped');
-                }
-            });
+          if (vm.ClusterDetails.status == 'Active') {
+            clearInterval(statusUpdater)
+            $('#cluster-progress').removeClass('progress-bar-animated').removeClass('progress-bar-striped');
+          }
+        });
     };
 
     $http.get('/api/list/servers')
