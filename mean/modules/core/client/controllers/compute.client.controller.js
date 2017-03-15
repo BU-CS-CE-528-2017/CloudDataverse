@@ -7,10 +7,33 @@
   function ComputeController($scope, $http) {
     var vm = this;
     vm.ConfigMode = 0;
+    var binaryUrl;
+    vm.BinaryUrl = '';
     vm.ServerList = {};
     vm.Cluster = {};
     vm.Cluster.NodeCount = 2;
     var statusUpdater;
+
+    vm.UploadBinary = function () {
+        var file = $('#upload-input').get(0).files[0];
+
+        if (file) {
+            var formData = new FormData();
+            formData.append('uploads[]', file, vm.Cluster.Name + '/' + file.name);
+
+            $.ajax({
+                url: '/api/upload/binary',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    vm.BinaryUrl = data;
+                    $scope.$apply();
+                }
+            });
+        }
+    };
 
     vm.VerifyClusterCount = function() {
       if (vm.Cluster.InstanceCount <= 0) {

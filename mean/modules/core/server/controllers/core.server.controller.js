@@ -298,6 +298,51 @@ exports.listImages = function (req, res) {
 
 };
 
+exports.uploadBinary = function (req, res) {
+    var path = require('path');
+    var fs = require('fs');
+    var multiparty = require('multiparty');
+    var http = require('http');
+    var util = require('util');
+    var container = '';
+    var form = new multiparty.Form();
+    var request = require('request');
+
+    form.on('field', function (name, value) {
+        if (name === 'container_name') {
+            container = value;
+        }
+    });
+    form.on('part', function (part) {
+        var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/';
+        var containerName = part.filename.split('/')[0];
+
+        var options = {
+            url: swift + containerName,
+            headers: {
+                'X-Auth-token': req.cookies['X-Project-Token']
+            }
+        };
+
+        request.put(options, function () {
+            options = {
+                url: swift + part.filename,
+                headers: {
+                    'X-Auth-token': req.cookies['X-Project-Token']
+                }
+            };
+
+            part.pipe(request.put(options));
+            part.on('finish', function () {
+                console.log(options.url);
+            });
+
+            res.send(options.url)
+        });
+    });
+    form.parse(req);
+};
+
 exports.getClusterStatus = function (req, res) {
     var request = require('request');
     var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters/' + req.params.id;

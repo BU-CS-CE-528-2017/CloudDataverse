@@ -104,29 +104,50 @@
                     </div>
                 </div>
             </div>
-            <div ng-show="!vm.ConfigMode" id="advanced-mode">
-
-            </div>
-        </form>
-
-        <form>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div style="word-wrap:break-word;" ng-show="vm.LaunchSuccess" class="card card-block" role="alert">
-                        <div class="progress">
-                            <div id="cluster-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;">{{vm.ClusterDetails.status}}</div>
+            <br />
+            <div class="job-upload">
+                <h4 style="font-weight: 200; margin-top: 0em;">Create Job Binary</h4>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <input id="upload-input" type="file" name="uploads[]">
+                        <button ng-click="vm.UploadBinary()" class="btn btn-primary upload-btn" type="button">Upload Binary</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <div class="col-sm-2 pull-left col-form-label"><label>or</label></div>
+                            <div class="col-sm-4 col-form-label"><label>Link to Swift Object</label></div>
+                            <div class="col-sm-6"><input class="form-control" type="text"></div>
                         </div>
-                        <br />
-                        <b>Cluster name:</b> {{vm.ClusterDetails.name}}
-                        <br />
-                        <b>Cluster public key:</b> {{vm.ClusterDetails.management_public_key}}
-                        <br />
-                        <b>Created at:</b> {{vm.ClusterDetails.created_at}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div style="word-wrap:break-word;" ng-show="vm.BinaryUrl != ''" class="card card-block" role="alert">
+                            Binary available at: {{vm.BinaryUrl}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div style="word-wrap:break-word;" ng-show="vm.LaunchSuccess" class="card card-block" role="alert">
+                            <div class="progress">
+                                <div id="cluster-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;">{{vm.ClusterDetails.status}}</div>
+                            </div>
+                            <br />
+                            <b>Cluster name:</b> {{vm.ClusterDetails.name}}
+                            <br />
+                            <b>Cluster public key:</b> {{vm.ClusterDetails.management_public_key}}
+                            <br />
+                            <b>Created at:</b> {{vm.ClusterDetails.created_at}}
+                        </div>
                     </div>
                 </div>
             </div>
+            <br />
+            <div ng-show="!vm.ConfigMode" id="advanced-mode">
+                
+            </div>
         </form>
-
     </div>
 </section>
 

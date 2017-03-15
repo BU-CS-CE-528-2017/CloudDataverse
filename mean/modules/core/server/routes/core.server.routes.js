@@ -16,6 +16,7 @@ module.exports = function (app) {
   app.get('/api/list/networks', core.listNetworks);
   app.post('/api/launch', core.launchInstance);
   app.get('/api/status/cluster/:id', core.getClusterStatus);
+  app.post('/api/upload/binary', core.uploadBinary);
   app.route('/compute').get(core.renderCompute);
 
   // Return a 404 for all undefined api, module or lib routes
