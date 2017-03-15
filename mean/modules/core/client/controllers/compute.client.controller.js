@@ -37,7 +37,7 @@
 
       $http.post('/api/launch', launchClusterPayload)
         .then(function(res) {
-          if (res.data.error_name != undefined) {
+          if (res.data.error_name !== undefined) {
             vm.LaunchSuccess = false;
             vm.ClusterDetails = res.data;
           } else {
@@ -58,8 +58,8 @@
           cluster = cluster.cluster;
           vm.ClusterDetails.status = cluster.status;
 
-          if (vm.ClusterDetails.status == 'Active') {
-            clearInterval(statusUpdater)
+          if (vm.ClusterDetails.status === 'Active') {
+            clearInterval(statusUpdater);
             $('#cluster-progress').removeClass('progress-bar-animated').removeClass('progress-bar-striped');
           }
         });
