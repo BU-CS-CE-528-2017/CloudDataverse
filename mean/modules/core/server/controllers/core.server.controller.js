@@ -298,6 +298,26 @@ exports.listImages = function (req, res) {
 
 };
 
+exports.getClusterStatus = function (req, res) {
+    var request = require('request');
+    var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters/' + req.params.id;
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    var options = {
+        url: sahara,
+        headers: headers
+    };
+
+    function getStatus(error, response, body) {
+        res.json(body);
+    }
+
+    request.get(options, getStatus);
+};
+
 exports.listFlavors = function (req, res) {
     var OSWrap = require('openstack-wrapper');
     var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
