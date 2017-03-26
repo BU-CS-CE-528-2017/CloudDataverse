@@ -41,7 +41,7 @@
                                             namenode, master
                                         </small>
                                         <small ng-if="vm.Cluster.Plugin == 'storm'">
-                                            zookeeper, nimbus, supervisor
+                                            nimbus
                                         </small>
                                     </div>
                                     <div class="col-sm-6">
@@ -50,10 +50,10 @@
                                             datanode, nodemanager
                                         </small>
                                         <small ng-if="vm.Cluster.Plugin == 'spark'">
-                                            namenode, master
+                                            datanode, slave
                                         </small>
                                         <small ng-if="vm.Cluster.Plugin == 'storm'">
-                                            zookeeper, nimbus, supervisor
+                                            supervisor
                                         </small>
                                     </div>
                                 </div>
