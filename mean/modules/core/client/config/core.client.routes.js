@@ -39,6 +39,18 @@
       controller: 'ComputeController',
       controllerAs: 'vm'
     })
+    .state('jobs', {
+        url: '/jobs',
+        templateUrl: '/modules/core/client/views/jobs.client.view.html',
+        controller: 'JobController',
+        controllerAs: 'vm'
+    })
+    .state('clusters', {
+        url: '/clusters',
+        templateUrl: '/modules/core/client/views/clusters.client.view.html',
+        controller: 'ClusterController',
+        controllerAs: 'vm'
+    })
     .state('not-found', {
       url: '/not-found',
       templateUrl: '/modules/core/client/views/404.client.view.html',
