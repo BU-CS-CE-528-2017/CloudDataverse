@@ -44,7 +44,6 @@
       } else {
         vm.Cluster.NodeCount = vm.Cluster.InstanceCount - 1;
       }
-
     };
 
     vm.LaunchCluster = function() {
@@ -68,10 +67,8 @@
             vm.ClusterDetails = res.data.cluster;
 
             statusUpdater = setInterval(updateLaunchStatus, 1000);
-
           }
         });
-
     };
 
     var updateLaunchStatus = function() {
@@ -124,7 +121,6 @@
                         vm.Flavors = flavors;
                         vm.Plugins = plugins;
                       });
-
                   });
               });
           });

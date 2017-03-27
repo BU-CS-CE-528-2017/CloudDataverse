@@ -77,15 +77,58 @@ exports.listServers = function (req, res) {
 exports.launchInstance = function (req, res) {
     var request = require('request');
 
+    var pluginVersion = '';
+    var defaultImageId = '';
+    var masterNodeProcesses = [];
+    var workerNodeProcesses = [];
+    var zookeeperNodeProcesses = [];
+
+    switch (req.body.plugin_name) {
+        case 'vanilla':
+            pluginVersion = '2.7.1';
+            defaultImageId = '64599610-2952-4a1f-9291-2711c966905c';
+            masterNodeProcesses = [
+                'namenode',
+                'resourcemanager',
+                'oozie',
+                'historyserver'
+            ];
+            workerNodeProcesses = [
+                'datanode',
+                'nodemanager'
+            ];
+            break;
+        case 'spark':
+            pluginVersion = '1.6.0';
+            defaultImageId = '68abdc64-b0ac-48a7-bbf5-43a04ccffa7e';
+            masterNodeProcesses = [
+                'namenode',
+                'master'
+            ];
+            workerNodeProcesses = [
+                'datanode',
+                'slave'
+            ];
+            break;
+        case 'storm':
+            pluginVersion = '0.9.2';
+            defaultImageId = 'df9982fb-aac7-48d4-ad78-93c3105a5d68';
+            masterNodeProcesses = [
+                'nimbus'
+            ];
+            workerNodeProcesses = [
+                'supervisor',
+            ];
+            zookeeperNodeProcesses = [
+                'zookeeper'
+            ];
+            break;
+    }
+
     var masterTemplate = {
         'plugin_name': req.body.plugin_name,
-        'hadoop_version': '2.7.1',
-        'node_processes': [
-          'namenode',
-          'resourcemanager',
-          'oozie',
-          'historyserver'
-        ],
+        'hadoop_version': pluginVersion,
+        'node_processes': masterNodeProcesses,
         'name': req.body.name + 'MASTER',
         'flavor_id': req.body.flavor,
         'use_autoconfig': true,
@@ -95,12 +138,20 @@ exports.launchInstance = function (req, res) {
 
     var workerTemplate = {
         'plugin_name': req.body.plugin_name,
-        'hadoop_version': '2.7.1',
-        'node_processes': [
-          'datanode',
-          'nodemanager'
-        ],
+        'hadoop_version': pluginVersion,
+        'node_processes': workerNodeProcesses,
         'name': req.body.name + 'WORKER',
+        'flavor_id': req.body.flavor,
+        'use_autoconfig': true,
+        'auto_security_group': true,
+        'availability_zone': 'nova'
+    };
+
+    var zookeeperTemplate = {
+        'plugin_name': req.body.plugin_name,
+        'hadoop_version': pluginVersion,
+        'node_processes': zookeeperNodeProcesses,
+        'name': req.body.name + 'ZOOKEEPER',
         'flavor_id': req.body.flavor,
         'use_autoconfig': true,
         'auto_security_group': true,
@@ -109,7 +160,7 @@ exports.launchInstance = function (req, res) {
 
     var clusterTemplate = {
         'plugin_name': req.body.plugin_name,
-        'hadoop_version': '2.7.1',
+        'hadoop_version': pluginVersion,
         'node_groups': [{
             'name': 'master',
             'count': 1,
@@ -122,9 +173,18 @@ exports.launchInstance = function (req, res) {
         'name': req.body.name
     };
 
+    if (req.body.plugin_name == 'storm') {
+        var zookeeper_node = {
+            'name': 'zookeeper',
+            'count': 1,
+            'node_group_template_id': ''
+        };
+        clusterTemplate.node_groups.push(zookeeper_node);
+    }
+
     var launchTemplate = {
         'plugin_name': req.body.plugin_name,
-        'hadoop_version': '2.7.1',
+        'hadoop_version': pluginVersion,
         'cluster_template_id': '',
         'default_image_id': '64599610-2952-4a1f-9291-2711c966905c',
         'user_keypair_id': req.body.user_keypair_id,
@@ -178,6 +238,30 @@ exports.launchInstance = function (req, res) {
         return promise;
     };
 
+    var genZookeeperTemplate = function () {
+        var promise = new Promise(function (resolve, reject) {
+            if (req.body.plugin_name) {
+                request({
+                    url: createNodeEndpoint,
+                    method: 'POST',
+                    headers: headers,
+                    json: zookeeperTemplate
+                }, function (error, response, body) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        clusterTemplate.node_groups[2].node_group_template_id = body.node_group_template.id;
+                        resolve('Zookeeper Template Created');
+                    }
+                });
+            }
+            else {
+                resolve('Plugin version is not Storm... nothing to do.');
+            }
+        });
+        return promise;
+    };
+
     var genClusterTemplate = function () {
         var promise = new Promise(function (resolve, reject) {
 
@@ -220,6 +304,7 @@ exports.launchInstance = function (req, res) {
 
     // Begin executing chain
     genMasterTemplate()
+        .then(genZookeeperTemplate)
 		.then(genWorkerTemplate)
         .then(genClusterTemplate)
         .then(launchCluster);
@@ -295,7 +380,6 @@ exports.listImages = function (req, res) {
             res.json(images);
         }
     });
-
 };
 
 exports.uploadBinary = function (req, res) {
@@ -331,12 +415,10 @@ exports.uploadBinary = function (req, res) {
                     'X-Auth-token': req.cookies['X-Project-Token']
                 }
             };
-
             part.pipe(request.put(options));
             part.on('finish', function () {
                 console.log(options.url);
             });
-
             res.send(options.url)
         });
     });
@@ -374,7 +456,6 @@ exports.listFlavors = function (req, res) {
             res.json(flavors);
         }
     });
-
 };
 
 exports.openStackAuth = function (req, res) {
