@@ -4,6 +4,8 @@ var validator = require('validator'),
   path = require('path'),
   config = require(path.resolve('./config/config'));
 
+var conf = require(path.resolve('./config'));
+
 /**
  * Render the main application page
  */

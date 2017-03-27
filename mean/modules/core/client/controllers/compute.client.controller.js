@@ -13,6 +13,28 @@
     vm.Cluster = {};
     vm.Cluster.NodeCount = 2;
     var statusUpdater;
+    vm.InputFiles = [
+        {
+            SwiftObjectUrl: '',
+            SwiftObjectName: 'Word Count 1'
+        },
+        {
+            SwiftObjectUrl: '',
+            SwiftObjectName: 'Word Count 45'
+        },
+        {
+            SwiftObjectUrl: '',
+            SwiftObjectName: 'Word Sample Data'
+        },
+        {
+            SwiftObjectUrl: '',
+            SwiftObjectName: 'Swift Word File'
+        },
+        {
+            SwiftObjectUrl: '',
+            SwiftObjectName: 'Word Count 84'
+        },
+    ];
 
     vm.UploadBinary = function () {
         var file = $('#upload-input').get(0).files[0];
