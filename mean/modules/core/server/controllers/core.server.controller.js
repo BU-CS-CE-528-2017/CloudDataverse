@@ -186,7 +186,7 @@ exports.launchInstance = function (req, res) {
         'plugin_name': req.body.plugin_name,
         'hadoop_version': pluginVersion,
         'cluster_template_id': '',
-        'default_image_id': '64599610-2952-4a1f-9291-2711c966905c',
+        'default_image_id': defaultImageId,
         'user_keypair_id': req.body.user_keypair_id,
         'name': req.body.name + 'CLUSTER',
         'neutron_management_network': req.body.network
@@ -240,7 +240,7 @@ exports.launchInstance = function (req, res) {
 
     var genZookeeperTemplate = function () {
         var promise = new Promise(function (resolve, reject) {
-            if (req.body.plugin_name) {
+            if (req.body.plugin_name == 'storm') {
                 request({
                     url: createNodeEndpoint,
                     method: 'POST',
