@@ -476,6 +476,12 @@ exports.openStackAuth = function (req, res) {
     });
 };
 
+exports.getContainerId = function (req, res) {
+
+  var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/' + req.params.id;
+  console.log(swift);
+}
+
 /**
  * Render the server not found responses
  * Performs content-negotiation on the Accept HTTP header
