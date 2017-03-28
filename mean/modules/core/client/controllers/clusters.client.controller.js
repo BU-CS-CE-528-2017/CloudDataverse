@@ -5,7 +5,16 @@
     .controller('ClusterController', ClusterController);
 
   function ClusterController($scope, $http) {
-    var vm = this;
-    
+      var vm = this;
+
+      // On page load, run anonymously invoked function
+      $(function () {
+          $http.get('/api/list/clusters')
+              .then(function (res) {
+                  // at this point, res.data should contain JSON, put it in the frontend
+                  var resp = JSON.parse(res.data);
+                  vm.Clusters = resp.clusters;
+              });
+      });
   }
 }());

@@ -460,6 +460,35 @@ exports.listFlavors = function (req, res) {
     });
 };
 
+exports.listClusters = function (req, res) {
+    var request = require('request');
+    var listClusterEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters';
+
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    var options = {
+        url: listClusterEndpoint,
+        headers: headers
+    };
+
+    request({
+        url: listClusterEndpoint,
+        method: 'GET',
+        headers: headers
+    }, function (error, response, body) {
+        if (error) {
+            console.log(error);
+            res.send('ERROR');
+        } else {
+            console.log(response.statusCode, body);
+            res.json(body);
+        }
+    });
+};
+
 exports.openStackAuth = function (req, res) {
     var OSWrap = require('openstack-wrapper');
     var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');

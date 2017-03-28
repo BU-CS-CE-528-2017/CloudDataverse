@@ -7,5 +7,7 @@
   function JobController($scope, $http) {
     var vm = this;
     
+
+
   }
 }());

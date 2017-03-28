@@ -15,25 +15,13 @@
     var statusUpdater;
     vm.InputFiles = [
         {
-            SwiftObjectUrl: '',
+            SwiftObjectUrl: 'http://rdgw.kaizen.massopencloud.org/swift/v1/WordCountExample4/WordCount.jar',
             SwiftObjectName: 'Word Count 1'
         },
         {
             SwiftObjectUrl: '',
             SwiftObjectName: 'Word Count 45'
-        },
-        {
-            SwiftObjectUrl: '',
-            SwiftObjectName: 'Word Sample Data'
-        },
-        {
-            SwiftObjectUrl: '',
-            SwiftObjectName: 'Swift Word File'
-        },
-        {
-            SwiftObjectUrl: '',
-            SwiftObjectName: 'Word Count 84'
-        },
+        }
     ];
 
     vm.UploadBinary = function () {

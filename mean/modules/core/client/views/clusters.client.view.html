@@ -1,7 +1,24 @@
-<section ng-controller="ComputeController as vm" class="jumbotron">
+<section ng-controller="ClusterController as vm" class="jumbotron">
     <div style="margin-top: -3em;" class="container">
         <form>
-            <h4>This is the clusters page.</h4>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table">
+                        <thead class="thead-inverse">
+                            <tr>
+                                <th>Cluster Name</th>
+                                <th>Plugin Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="cluster in vm.Clusters">
+                                <th scope="row">{{cluster.name}}</th>
+                                <td>{{cluster.plugin_name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </form>
     </div>
 </section>
