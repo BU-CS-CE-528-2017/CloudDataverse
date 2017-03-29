@@ -79,12 +79,33 @@ exports.listServers = function (req, res) {
 exports.createJob = function (req, res) {
     var request = require('request');
 
+    var project_id = 'd329686636634edc847baf2684a8d7a7';
+    var token = 'gAAAAABY2xjOi1FoI0pY7wbRbFQ9GT1XrAGxYz7GbDR_V18iWhNP8bmWHwLcenHbS1UrjH0ZjFKIIE8JGQ71u8Fs0qp4vPXxVhMZxmaybnNJK93fTSPbxx5fpqdDZ6okCaMYgzPQGbIWY_30ESTqtgq0QqRCDOy49eJi7ej5KaasjNWQXGXO3GNLA32NLIMbqjk22HxqtHgj';
+
     // Create Input Data Sources
     var promises = [];
-    var createDataSourceEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/data-sources';
+    var data_inputs = [];
+    var data_outputs = [];
+    var job_id = '';
+    var job_binary_id = '';
+    var createDataSourceEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/data-sources';
     var headers = {
         'Content-Type': 'application/json',
-        'X-Auth-Token': req.cookies['X-Project-Token']
+        'X-Auth-Token': token
+    };
+
+    var job_template = {
+        'description': 'CloudCompute UI Job for ' + req.body.container_name,
+        'mains': [],
+        'libs': [],
+        'type': req.body.job_type,
+        'name': req.body.container_name + '_' + Date.now().toString().slice(-3)
+    };
+
+    var start_job_template = {
+        'cluster_id': req.body.cluster_id,
+        'input_id': '',
+        'output_id': ''
     };
 
     var input_sources = req.body.input_sources;
@@ -93,9 +114,13 @@ exports.createJob = function (req, res) {
         var promise = new Promise(function (resolve, reject) {
 
             var dataSource = {
-                "url": input_sources[i].url,
+                "url": 'swift://' + input_sources[i].url,
                 "type": "swift",
-                "name": input_sources[i].name + '_INPUT'
+                "name": input_sources[i].name + '_INPUT',
+                'credentials': {
+                    'user': 'bcorn@bu.edu',
+                    'password': 'LTOyrp5plB!'
+                }
             };
 
             request({
@@ -107,7 +132,8 @@ exports.createJob = function (req, res) {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(body);
+                    data_inputs.push(body.data_source.id)
+                    //console.log(body.data_source);
                     resolve('Input Data Source Created');
                 }
             });
@@ -117,13 +143,17 @@ exports.createJob = function (req, res) {
 
     // Create Output Data Source
     promises.push(new Promise(function (resolve, reject) {
-
-        var outputSourceUrl = 'swift://' + req.body.container_name + '/' + '_OUTPUT.txt';
+        console.log('Creating data source...')
+        var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_sources[0].name + '_OUTPUT';
 
         var dataSource = {
-            "url": outputSourceUrl,
-            "type": "swift",
-            "name": req.body.container_name + '_OUTPUT'
+            'url': outputSourceUrl,
+            'type': 'swift',
+            'name': input_sources[0].name + '_OUTPUT',
+            'credentials': {
+                'user': 'bcorn@bu.edu',
+                'password': 'LTOyrp5plB!'
+            }
         };
 
         request({
@@ -133,21 +163,29 @@ exports.createJob = function (req, res) {
             json: dataSource
         }, function (error, response, body) {
             if (error) {
+                console.log('Error occured during output source creation...');
                 console.log(error);
             } else {
-                console.log(body);
+                //console.log(body.data_source);
+                data_outputs.push(body.data_source.id);
                 resolve('Output Data Source Created');
             }
         });
     }));
-
+    console.log(promises);
     // Configure Job Binary from Upload
     promises.push(new Promise(function (resolve, reject) {
-        var jobBinaryEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/job-binaries';
+        console.log('Creating job binary...')
+
+        var jobBinaryEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/job-binaries';
 
         var jobBinary = {
-            "url": 'swift://' + req.body.binary_url,
-            "name": req.body.container_name + 'BINARY'
+            'url': 'swift://' + req.body.binary_url,
+            'name': req.body.container_name + '_BINARY',
+            'extra': {
+                'password': 'LTOyrp5plB!',
+                'user': 'bcorn@bu.edu'
+            }
         };
 
         request({
@@ -159,17 +197,66 @@ exports.createJob = function (req, res) {
             if (error) {
                 console.log(error);
             } else {
-                console.log(body);
+                //console.log(body.job_binary);
+                job_template.libs.push(body.job_binary.id)
+                job_binary_id = body.job_binary.id;
                 resolve('Job Binary Created');
             }
         });
     }));
 
-    // Create Job
+    // Create Job Template
+    var generate_job = function () {
+        console.log('Creating job template...')
+        var promise = new Promise(function (resolve, reject) {
+            request({
+                url: 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/jobs',
+                method: 'POST',
+                headers: headers,
+                json: job_template
+            }, function (error, response, body) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(body);
+                    job_id = body.job.id;
+                    resolve('Job Template Created');
+                }
+            });
+        });
+        return promise;
+    };
 
-    // Launch Job
+    // Execute Job
+    var execute_job = function () {
+        console.log('Executing job...')
+        start_job_template.input_id = data_inputs[0];
+        start_job_template.output_id = data_outputs[0];
+
+        var promise = new Promise(function (resolve, reject) {
+            request({
+                url: 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/jobs/' + job_id + '/execute',
+                method: 'POST',
+                headers: headers,
+                json: start_job_template
+            }, function (error, response, body) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(body);
+                    resolve('Job Execution Attempted');
+                    res.json(body);
+                }
+            });
+        });
+        return promise;
+    };
 
     // Execute Promises
+    Promise.all(promises).then(function () {
+        // Data Sources Created
+        generate_job().then(execute_job)
+    });
 
 };
 
