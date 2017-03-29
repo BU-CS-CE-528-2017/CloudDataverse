@@ -15,17 +15,14 @@
     var statusUpdater;
     vm.InputFiles = [
         {
-            SwiftObjectUrl: 'http://rdgw.kaizen.massopencloud.org/swift/v1/WordCountExample4/WordCount.jar',
-            SwiftObjectName: 'Word Count 1'
-        },
-        {
-            SwiftObjectUrl: '',
-            SwiftObjectName: 'Word Count 45'
+            url: 'MapReduceSample/sample_input.txt',
+            name: 'MapReduceSample'
         }
     ];
 
     vm.UploadBinary = function () {
         var file = $('#upload-input').get(0).files[0];
+        vm.BinaryFileName = file.name;
 
         if (file) {
             var formData = new FormData();
@@ -44,6 +41,22 @@
             });
         }
     };
+
+    vm.TestJobLaunch = function () {
+        var job = {
+            'job_type': 'MapReduce',
+            'container_name': vm.Cluster.Name,
+            'cluster_id': '79e92551-7bd0-4ed4-887d-f80eb39e5c94',
+            'input_sources': vm.InputFiles,
+            'binary_url': vm.Cluster.Name + '/' + vm.BinaryFileName
+        };
+
+        $http.post('/api/create/data_job', job)
+          .then(function (res) {
+              vm.Job = res.data.job_execution;
+              statusUpdater = setInterval(updateJobStatus, 1000);
+          });
+    }
 
     vm.VerifyClusterCount = function() {
       if (vm.Cluster.InstanceCount <= 0) {
@@ -76,10 +89,23 @@
             vm.LaunchSuccess = true;
             vm.ClusterDetails = res.data.cluster;
 
-            statusUpdater = setInterval(updateLaunchStatus, 1000);
+            statusUpdater = setInterval(updateLaunchStatus, 5000);
           }
         });
     };
+
+    var updateJobStatus = function () {
+        $http.get('/api/status/job/' + vm.Job.id)
+            .then(function (res) {
+                var resp = JSON.parse(res.data);
+                vm.Job.info = resp.job_execution.info;
+
+                if (vm.Job.info.status == 'SUCCEEDED') {
+                    clearInterval(statusUpdater);
+                    $('#job-progress').removeClass('progress-bar-animated').removeClass('progress-bar-striped');
+                }
+            });
+    }
 
     var updateLaunchStatus = function() {
       $http.get('/api/status/cluster/' + vm.ClusterDetails.id)
@@ -91,6 +117,29 @@
           if (vm.ClusterDetails.status === 'Active') {
             clearInterval(statusUpdater);
             $('#cluster-progress').removeClass('progress-bar-animated').removeClass('progress-bar-striped');
+
+            var job_type = '';
+
+            switch (vm.Cluster.Plugin) {
+                case 'vanilla':
+                    job_type = 'MapReduce';
+                    break;
+            }
+
+            // Start Job Creation Cycle
+            var job = {
+                'job_type': job_type,
+                'container_name': vm.Cluster.Name,
+                'cluster_id': vm.ClusterDetails.id,
+                'input_sources': vm.InputFiles,
+                'binary_url': vm.Cluster.Name + '/' + vm.BinaryFileName
+            };
+
+            $http.post('/api/create/data_job', job)
+              .then(function (res) {
+                  vm.Job = res.data.job_execution;
+                  statusUpdater = setInterval(updateJobStatus, 5000);
+              });
           }
         });
     };
