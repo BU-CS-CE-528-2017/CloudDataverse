@@ -76,11 +76,33 @@ exports.listServers = function (req, res) {
     });
 };
 
+exports.getJobStatus = function (req, res) {
+    var request = require('request');
+    var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/job-executions/' + req.params.id + '/refresh-status';
+    console.log(sahara);
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+    request({
+        url: sahara,
+        method: 'GET',
+        headers: headers,
+    }, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(body);
+            res.json(body);
+        }
+    });
+}
+
 exports.createJob = function (req, res) {
     var request = require('request');
 
-    var project_id = 'd329686636634edc847baf2684a8d7a7';
-    var token = 'gAAAAABY2xjOi1FoI0pY7wbRbFQ9GT1XrAGxYz7GbDR_V18iWhNP8bmWHwLcenHbS1UrjH0ZjFKIIE8JGQ71u8Fs0qp4vPXxVhMZxmaybnNJK93fTSPbxx5fpqdDZ6okCaMYgzPQGbIWY_30ESTqtgq0QqRCDOy49eJi7ej5KaasjNWQXGXO3GNLA32NLIMbqjk22HxqtHgj';
+    var project_id = req.cookies['Project-Id'];
+    var token = req.cookies['X-Project-Token'];
 
     // Create Input Data Sources
     var promises = [];
