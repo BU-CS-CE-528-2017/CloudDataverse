@@ -8,302 +8,307 @@ var validator = require('validator'),
  * Render the main application page
  */
 exports.renderIndex = function (req, res) {
-    var safeUserObject = null;
-    if (req.user) {
-        safeUserObject = {
-            displayName: validator.escape(req.user.displayName),
-            provider: validator.escape(req.user.provider),
-            username: validator.escape(req.user.username),
-            created: req.user.created.toString(),
-            roles: req.user.roles,
-            profileImageURL: req.user.profileImageURL,
-            email: validator.escape(req.user.email),
-            lastName: validator.escape(req.user.lastName),
-            firstName: validator.escape(req.user.firstName),
-            additionalProvidersData: req.user.additionalProvidersData
-        };
-    }
+  var safeUserObject = null;
+  var swiftInstance = null;
+  if (req.session.containerid) {
+    swiftInstance = 'http://rdgw.kaizen.massopencloud.org/swift/v1/' + req.session.containerid;
+    console.log('swift url: ' + swiftInstance);
+  }
+  if (req.user) {
+    safeUserObject = {
+      displayName: validator.escape(req.user.displayName),
+      provider: validator.escape(req.user.provider),
+      username: validator.escape(req.user.username),
+      created: req.user.created.toString(),
+      roles: req.user.roles,
+      profileImageURL: req.user.profileImageURL,
+      email: validator.escape(req.user.email),
+      lastName: validator.escape(req.user.lastName),
+      firstName: validator.escape(req.user.firstName),
+      additionalProvidersData: req.user.additionalProvidersData
+    };
+  }
 
-    res.render('modules/core/server/views/index', {
-        user: JSON.stringify(safeUserObject),
-        sharedConfig: JSON.stringify(config.shared)
-    });
+  res.render('modules/core/server/views/index', {
+    user: JSON.stringify(safeUserObject),
+    swift: swiftInstance,
+    sharedConfig: JSON.stringify(config.shared)
+  });
 };
 
 /**
  * Render the compute page
  */
 exports.renderCompute = function (req, res) {
-    res.render('modules/core/server/views/compute', {
-        sharedConfig: JSON.stringify(config.shared)
-    });
+  res.render('modules/core/server/views/compute', {
+    sharedConfig: JSON.stringify(config.shared)
+  });
 };
 
 /**
  * Render the server error page
  */
 exports.renderServerError = function (req, res) {
-    res.status(500).render('modules/core/server/views/500', {
-        error: 'Oops! Something went wrong...'
-    });
+  res.status(500).render('modules/core/server/views/500', {
+    error: 'Oops! Something went wrong...'
+  });
 };
 
 exports.listServers = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
+  var OSWrap = require('openstack-wrapper');
+  var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
 
-    keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
+  keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
+    if (error) {
+      console.error('an error occured', error);
+      res.send('error');
+    } else {
+      console.log('A project specific token has been retrived', project_token);
+      res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
+      var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
+
+      nova.listServers(function (error, servers_array) {
         if (error) {
-            console.error('an error occured', error);
-            res.send('error');
+          console.error('an error occured', error);
+          res.send('error');
         } else {
-            console.log('A project specific token has been retrived', project_token);
-            res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
-            var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
-
-            nova.listServers(function (error, servers_array) {
-                if (error) {
-                    console.error('an error occured', error);
-                    res.send('error');
-                } else {
-                    console.log('A list of servers have been retrived', servers_array);
-                    res.json(servers_array);
-                }
-            });
+          console.log('A list of servers have been retrived', servers_array);
+          res.json(servers_array);
         }
-    });
+      });
+    }
+  });
 };
 
 exports.launchInstance = function (req, res) {
-    var request = require('request');
+  var request = require('request');
 
-    var pluginVersion = '';
-    var defaultImageId = '';
-    var masterNodeProcesses = [];
-    var workerNodeProcesses = [];
-    var zookeeperNodeProcesses = [];
+  var pluginVersion = '';
+  var defaultImageId = '';
+  var masterNodeProcesses = [];
+  var workerNodeProcesses = [];
+  var zookeeperNodeProcesses = [];
 
-    switch (req.body.plugin_name) {
-        case 'vanilla':
-            pluginVersion = '2.7.1';
-            defaultImageId = '64599610-2952-4a1f-9291-2711c966905c';
-            masterNodeProcesses = [
-                'namenode',
-                'resourcemanager',
-                'oozie',
-                'historyserver'
-            ];
-            workerNodeProcesses = [
-                'datanode',
-                'nodemanager'
-            ];
-            break;
-        case 'spark':
-            pluginVersion = '1.6.0';
-            defaultImageId = '68abdc64-b0ac-48a7-bbf5-43a04ccffa7e';
-            masterNodeProcesses = [
-                'namenode',
-                'master'
-            ];
-            workerNodeProcesses = [
-                'datanode',
-                'slave'
-            ];
-            break;
-        case 'storm':
-            pluginVersion = '0.9.2';
-            defaultImageId = 'df9982fb-aac7-48d4-ad78-93c3105a5d68';
-            masterNodeProcesses = [
-                'nimbus'
-            ];
-            workerNodeProcesses = [
-                'supervisor',
-            ];
-            zookeeperNodeProcesses = [
-                'zookeeper'
-            ];
-            break;
-    }
+  switch (req.body.plugin_name) {
+    case 'vanilla':
+      pluginVersion = '2.7.1';
+      defaultImageId = '64599610-2952-4a1f-9291-2711c966905c';
+      masterNodeProcesses = [
+        'namenode',
+        'resourcemanager',
+        'oozie',
+        'historyserver'
+      ];
+      workerNodeProcesses = [
+        'datanode',
+        'nodemanager'
+      ];
+      break;
+    case 'spark':
+      pluginVersion = '1.6.0';
+      defaultImageId = '68abdc64-b0ac-48a7-bbf5-43a04ccffa7e';
+      masterNodeProcesses = [
+        'namenode',
+        'master'
+      ];
+      workerNodeProcesses = [
+        'datanode',
+        'slave'
+      ];
+      break;
+    case 'storm':
+      pluginVersion = '0.9.2';
+      defaultImageId = 'df9982fb-aac7-48d4-ad78-93c3105a5d68';
+      masterNodeProcesses = [
+        'nimbus'
+      ];
+      workerNodeProcesses = [
+        'supervisor',
+      ];
+      zookeeperNodeProcesses = [
+        'zookeeper'
+      ];
+      break;
+  }
 
-    var masterTemplate = {
-        'plugin_name': req.body.plugin_name,
-        'hadoop_version': pluginVersion,
-        'node_processes': masterNodeProcesses,
-        'name': req.body.name + 'MASTER',
-        'flavor_id': req.body.flavor,
-        'use_autoconfig': true,
-        'auto_security_group': true,
-        'availability_zone': 'nova'
+  var masterTemplate = {
+    'plugin_name': req.body.plugin_name,
+    'hadoop_version': pluginVersion,
+    'node_processes': masterNodeProcesses,
+    'name': req.body.name + 'MASTER',
+    'flavor_id': req.body.flavor,
+    'use_autoconfig': true,
+    'auto_security_group': true,
+    'availability_zone': 'nova'
+  };
+
+  var workerTemplate = {
+    'plugin_name': req.body.plugin_name,
+    'hadoop_version': pluginVersion,
+    'node_processes': workerNodeProcesses,
+    'name': req.body.name + 'WORKER',
+    'flavor_id': req.body.flavor,
+    'use_autoconfig': true,
+    'auto_security_group': true,
+    'availability_zone': 'nova'
+  };
+
+  var zookeeperTemplate = {
+    'plugin_name': req.body.plugin_name,
+    'hadoop_version': pluginVersion,
+    'node_processes': zookeeperNodeProcesses,
+    'name': req.body.name + 'ZOOKEEPER',
+    'flavor_id': req.body.flavor,
+    'use_autoconfig': true,
+    'auto_security_group': true,
+    'availability_zone': 'nova'
+  };
+
+  var clusterTemplate = {
+    'plugin_name': req.body.plugin_name,
+    'hadoop_version': pluginVersion,
+    'node_groups': [{
+      'name': 'master',
+      'count': 1,
+      'node_group_template_id': ''
+    }, {
+      'name': 'worker',
+      'count': req.body.count,
+      'node_group_template_id': ''
+    }],
+    'name': req.body.name
+  };
+
+  if (req.body.plugin_name == 'storm') {
+    var zookeeper_node = {
+      'name': 'zookeeper',
+      'count': 1,
+      'node_group_template_id': ''
     };
+    clusterTemplate.node_groups.push(zookeeper_node);
+  }
 
-    var workerTemplate = {
-        'plugin_name': req.body.plugin_name,
-        'hadoop_version': pluginVersion,
-        'node_processes': workerNodeProcesses,
-        'name': req.body.name + 'WORKER',
-        'flavor_id': req.body.flavor,
-        'use_autoconfig': true,
-        'auto_security_group': true,
-        'availability_zone': 'nova'
-    };
-
-    var zookeeperTemplate = {
-        'plugin_name': req.body.plugin_name,
-        'hadoop_version': pluginVersion,
-        'node_processes': zookeeperNodeProcesses,
-        'name': req.body.name + 'ZOOKEEPER',
-        'flavor_id': req.body.flavor,
-        'use_autoconfig': true,
-        'auto_security_group': true,
-        'availability_zone': 'nova'
-    };
-
-    var clusterTemplate = {
-        'plugin_name': req.body.plugin_name,
-        'hadoop_version': pluginVersion,
-        'node_groups': [{
-            'name': 'master',
-            'count': 1,
-            'node_group_template_id': ''
-        }, {
-            'name': 'worker',
-            'count': req.body.count,
-            'node_group_template_id': ''
-        }],
-        'name': req.body.name
-    };
-
-    if (req.body.plugin_name == 'storm') {
-        var zookeeper_node = {
-            'name': 'zookeeper',
-            'count': 1,
-            'node_group_template_id': ''
-        };
-        clusterTemplate.node_groups.push(zookeeper_node);
-    }
-
-    var launchTemplate = {
-        'plugin_name': req.body.plugin_name,
-        'hadoop_version': pluginVersion,
-        'cluster_template_id': '',
-        'default_image_id': defaultImageId,
-        'user_keypair_id': req.body.user_keypair_id,
-        'name': req.body.name + 'CLUSTER',
-        'neutron_management_network': req.body.network
-    };
+  var launchTemplate = {
+    'plugin_name': req.body.plugin_name,
+    'hadoop_version': pluginVersion,
+    'cluster_template_id': '',
+    'default_image_id': defaultImageId,
+    'user_keypair_id': req.body.user_keypair_id,
+    'name': req.body.name + 'CLUSTER',
+    'neutron_management_network': req.body.network
+  };
 
     /* REST ENDPOINT AND HEADER OBJECT */
-    var createNodeEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/node-group-templates';
-    var headers = {
-        'Content-Type': 'application/json',
-        'X-Auth-Token': req.cookies['X-Project-Token']
-    };
+  var createNodeEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/node-group-templates';
+  var headers = {
+    'Content-Type': 'application/json',
+    'X-Auth-Token': req.cookies['X-Project-Token']
+  };
 
-    var genMasterTemplate = function () {
-        var promise = new Promise(function (resolve, reject) {
-            request({
-                url: createNodeEndpoint,
-                method: 'POST',
-                headers: headers,
-                json: masterTemplate
-            }, function (error, response, body) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log(body);
-                    clusterTemplate.node_groups[0].node_group_template_id = body.node_group_template.id;
-                    resolve('Master Template Created');
-                }
-            });
-        });
-        return promise;
-    };
+  var genMasterTemplate = function () {
+    var promise = new Promise(function (resolve, reject) {
+      request({
+        url: createNodeEndpoint,
+        method: 'POST',
+        headers: headers,
+        json: masterTemplate
+      }, function (error, response, body) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(body);
+          clusterTemplate.node_groups[0].node_group_template_id = body.node_group_template.id;
+          resolve('Master Template Created');
+        }
+      });
+    });
+    return promise;
+  };
 
-    var genWorkerTemplate = function () {
-        var promise = new Promise(function (resolve, reject) {
-            request({
-                url: createNodeEndpoint,
-                method: 'POST',
-                headers: headers,
-                json: workerTemplate
-            }, function (error, response, body) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    clusterTemplate.node_groups[1].node_group_template_id = body.node_group_template.id;
-                    resolve('Worker Template Created');
-                }
-            });
-        });
-        return promise;
-    };
+  var genWorkerTemplate = function () {
+    var promise = new Promise(function (resolve, reject) {
+      request({
+        url: createNodeEndpoint,
+        method: 'POST',
+        headers: headers,
+        json: workerTemplate
+      }, function (error, response, body) {
+        if (error) {
+          console.log(error);
+        } else {
+          clusterTemplate.node_groups[1].node_group_template_id = body.node_group_template.id;
+          resolve('Worker Template Created');
+        }
+      });
+    });
+    return promise;
+  };
 
-    var genZookeeperTemplate = function () {
-        var promise = new Promise(function (resolve, reject) {
-            if (req.body.plugin_name == 'storm') {
-                request({
-                    url: createNodeEndpoint,
-                    method: 'POST',
-                    headers: headers,
-                    json: zookeeperTemplate
-                }, function (error, response, body) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        clusterTemplate.node_groups[2].node_group_template_id = body.node_group_template.id;
-                        resolve('Zookeeper Template Created');
-                    }
-                });
-            }
-            else {
-                resolve('Plugin version is not Storm... nothing to do.');
-            }
-        });
-        return promise;
-    };
-
-    var genClusterTemplate = function () {
-        var promise = new Promise(function (resolve, reject) {
-
-            var createClusterEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/cluster-templates';
-
-            request({
-                url: createClusterEndpoint,
-                method: 'POST',
-                headers: headers,
-                json: clusterTemplate
-            }, function (error, response, body) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log(response.statusCode, body);
-                    launchTemplate.cluster_template_id = body.cluster_template.id;
-                    resolve('Cluster template created successfully.')
-                }
-            });
-        });
-        return promise;
-    };
-
-    var launchCluster = function () {
-        var launchClusterEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters';
+  var genZookeeperTemplate = function () {
+    var promise = new Promise(function (resolve, reject) {
+      if (req.body.plugin_name == 'storm') {
         request({
-            url: launchClusterEndpoint,
-            method: 'POST',
-            headers: headers,
-            json: launchTemplate
+          url: createNodeEndpoint,
+          method: 'POST',
+          headers: headers,
+          json: zookeeperTemplate
         }, function (error, response, body) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log(response.statusCode, body);
-                res.json(body);
-            }
+          if (error) {
+            console.log(error);
+          } else {
+            clusterTemplate.node_groups[2].node_group_template_id = body.node_group_template.id;
+            resolve('Zookeeper Template Created');
+          }
         });
-    };
+      } else {
+        resolve('Plugin version is not Storm... nothing to do.');
+      }
+    });
+    return promise;
+  };
+
+  var genClusterTemplate = function () {
+    var promise = new Promise(function (resolve, reject) {
+
+      var createClusterEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/cluster-templates';
+
+      request({
+        url: createClusterEndpoint,
+        method: 'POST',
+        headers: headers,
+        json: clusterTemplate
+      }, function (error, response, body) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(response.statusCode, body);
+          launchTemplate.cluster_template_id = body.cluster_template.id;
+          resolve('Cluster template created successfully.');
+        }
+      });
+    });
+    return promise;
+  };
+
+  var launchCluster = function () {
+    var launchClusterEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters';
+    request({
+      url: launchClusterEndpoint,
+      method: 'POST',
+      headers: headers,
+      json: launchTemplate
+    }, function (error, response, body) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(response.statusCode, body);
+        res.json(body);
+      }
+    });
+  };
 
     // Begin executing chain
-    genMasterTemplate()
+  genMasterTemplate()
         .then(genZookeeperTemplate)
 		.then(genWorkerTemplate)
         .then(genClusterTemplate)
@@ -312,194 +317,198 @@ exports.launchInstance = function (req, res) {
 };
 
 exports.listKeyPairs = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
+  var OSWrap = require('openstack-wrapper');
+  var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
 
-    nova.listKeyPairs(function (error, resp) {
-        if (!error) {
-            res.json(resp);
-        } else {
-            console.error('Could not retrieve key pairs');
-        }
-    });
+  nova.listKeyPairs(function (error, resp) {
+    if (!error) {
+      res.json(resp);
+    } else {
+      console.error('Could not retrieve key pairs');
+    }
+  });
 };
 
 exports.listNetworks = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var neutron = new OSWrap.Neutron('https://neutron.kaizen.massopencloud.org:9696/v2.0', req.cookies['X-Project-Token']);
+  var OSWrap = require('openstack-wrapper');
+  var neutron = new OSWrap.Neutron('https://neutron.kaizen.massopencloud.org:9696/v2.0', req.cookies['X-Project-Token']);
 
-    neutron.listNetworks(function (error, resp) {
-        res.json(resp);
-    });
+  neutron.listNetworks(function (error, resp) {
+    res.json(resp);
+  });
 };
 
 exports.listPlugins = function (req, res) {
-    var request = require('request');
-    var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/plugins';
-    console.log('Sahara URL: ' + sahara);
-    var headers = {
-        'Content-Type': 'application/json',
-        'X-Auth-Token': req.cookies['X-Project-Token']
-    };
+  var request = require('request');
+  var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/plugins';
+  console.log('Sahara URL: ' + sahara);
+  var headers = {
+    'Content-Type': 'application/json',
+    'X-Auth-Token': req.cookies['X-Project-Token']
+  };
 
-    var options = {
-        url: sahara,
-        headers: headers
-    };
+  var options = {
+    url: sahara,
+    headers: headers
+  };
 
-    function listPlugins(error, response, body) {
-        res.json(body);
-    }
+  function listPlugins(error, response, body) {
+    res.json(body);
+  }
 
-    request.get(options, listPlugins);
+  request.get(options, listPlugins);
 };
 
 exports.listQuotas = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
+  var OSWrap = require('openstack-wrapper');
+  var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
 
-    var startDate = new Date();
-    startDate.setHours(0);
-    var endDate = new Date();
-    console.log('Start Date' + startDate + '--------- End Date' + endDate);
-    nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function (error, resp) {
-        if (!error) {
-            res.json(resp);
-        }
-    });
+  var startDate = new Date();
+  startDate.setHours(0);
+  var endDate = new Date();
+  console.log('Start Date' + startDate + '--------- End Date' + endDate);
+  nova.getTenantUsage(req.cookies['Project-Id'], startDate, endDate, function (error, resp) {
+    if (!error) {
+      res.json(resp);
+    }
+  });
 };
 
 exports.listImages = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var nova = new OSWrap.Glance('https://glance.kaizen.massopencloud.org:9292/v2', req.cookies['X-Project-Token']);
+  var OSWrap = require('openstack-wrapper');
+  var nova = new OSWrap.Glance('https://glance.kaizen.massopencloud.org:9292/v2', req.cookies['X-Project-Token']);
 
-    nova.listImages(function (error, images) {
-        if (error) {
-            res.send('Could not load images');
-        } else {
-            res.json(images);
-        }
-    });
+  nova.listImages(function (error, images) {
+    if (error) {
+      res.send('Could not load images');
+    } else {
+      res.json(images);
+    }
+  });
 };
 
 exports.uploadBinary = function (req, res) {
-    var path = require('path');
-    var fs = require('fs');
-    var multiparty = require('multiparty');
-    var http = require('http');
-    var util = require('util');
-    var container = '';
-    var form = new multiparty.Form();
-    var request = require('request');
+  var path = require('path');
+  var fs = require('fs');
+  var multiparty = require('multiparty');
+  var http = require('http');
+  var util = require('util');
+  var container = '';
+  var form = new multiparty.Form();
+  var request = require('request');
 
-    form.on('field', function (name, value) {
-        if (name === 'container_name') {
-            container = value;
+  form.on('field', function (name, value) {
+    if (name === 'container_name') {
+      container = value;
+    }
+  });
+  form.on('part', function (part) {
+    var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/';
+    var containerName = part.filename.split('/')[0];
+
+    var options = {
+      url: swift + containerName,
+      headers: {
+        'X-Auth-token': req.cookies['X-Project-Token']
+      }
+    };
+
+    request.put(options, function () {
+      options = {
+        url: swift + part.filename,
+        headers: {
+          'X-Auth-token': req.cookies['X-Project-Token']
         }
+      };
+      part.pipe(request.put(options));
+      part.on('finish', function () {
+        console.log(options.url);
+      });
+      res.send(options.url);
     });
-    form.on('part', function (part) {
-        var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/';
-        var containerName = part.filename.split('/')[0];
-
-        var options = {
-            url: swift + containerName,
-            headers: {
-                'X-Auth-token': req.cookies['X-Project-Token']
-            }
-        };
-
-        request.put(options, function () {
-            options = {
-                url: swift + part.filename,
-                headers: {
-                    'X-Auth-token': req.cookies['X-Project-Token']
-                }
-            };
-            part.pipe(request.put(options));
-            part.on('finish', function () {
-                console.log(options.url);
-            });
-            res.send(options.url)
-        });
-    });
-    form.parse(req);
+  });
+  form.parse(req);
 };
 
 exports.getClusterStatus = function (req, res) {
-    var request = require('request');
-    var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters/' + req.params.id;
-    var headers = {
-        'Content-Type': 'application/json',
-        'X-Auth-Token': req.cookies['X-Project-Token']
-    };
+  var request = require('request');
+  var sahara = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters/' + req.params.id;
+  var headers = {
+    'Content-Type': 'application/json',
+    'X-Auth-Token': req.cookies['X-Project-Token']
+  };
 
-    var options = {
-        url: sahara,
-        headers: headers
-    };
+  var options = {
+    url: sahara,
+    headers: headers
+  };
 
-    function getStatus(error, response, body) {
-        res.json(body);
-    }
+  function getStatus(error, response, body) {
+    res.json(body);
+  }
 
-    request.get(options, getStatus);
+  request.get(options, getStatus);
 };
 
 exports.listFlavors = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
+  var OSWrap = require('openstack-wrapper');
+  var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + req.cookies['Project-Id'], req.cookies['X-Project-Token']);
 
-    nova.listFlavors(function (error, flavors) {
-        if (error) {
-            res.send('Could not load flavors');
-        } else {
-            res.json(flavors);
-        }
-    });
+  nova.listFlavors(function (error, flavors) {
+    if (error) {
+      res.send('Could not load flavors');
+    } else {
+      res.json(flavors);
+    }
+  });
 };
 
 exports.openStackAuth = function (req, res) {
-    var OSWrap = require('openstack-wrapper');
-    var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
+  var OSWrap = require('openstack-wrapper');
+  var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
 
-    keystone.getToken(req.body.user, req.body.password, function (error, token) {
-        if (error) {
-            res.status(400);
-            res.send('Error while authenticating.');
-            console.error('An error occurred while authenticating the user with Open Stack.');
-        } else {
+  keystone.getToken(req.body.user, req.body.password, function (error, token) {
+    if (error) {
+      res.status(400);
+      res.send('Error while authenticating.');
+      console.error('An error occurred while authenticating the user with Open Stack.');
+    } else {
             // creating cookie for auth token
-            res.cookie('X-Subject-Token', token.token, { maxAge: 900000, httpOnly: true });
-            res.cookie('Project-Id', token.project.id, { maxAge: 900000, httpOnly: true });
-            res.send('User authenticated');
-        }
-    });
+      res.cookie('X-Subject-Token', token.token, { maxAge: 900000, httpOnly: true });
+      res.cookie('Project-Id', token.project.id, { maxAge: 900000, httpOnly: true });
+      res.send('User authenticated');
+    }
+  });
 };
 
 exports.getContainerId = function (req, res) {
 
-  var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/' + req.params.id;
-  console.log(swift);
-}
+  // var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/' + req.params.id;
+  // console.log(swift);
+  req.session.containerid = req.params.id;
+  console.log(req.session.containerid);
+  res.redirect('/');
+  // res.send('container set');
+};
 
 /**
  * Render the server not found responses
  * Performs content-negotiation on the Accept HTTP header
  */
 exports.renderNotFound = function (req, res) {
-    res.status(404).format({
-        'text/html': function () {
-            res.render('modules/core/server/views/404', {
-                url: req.originalUrl
-            });
-        },
-        'application/json': function () {
-            res.json({
-                error: 'Path not found'
-            });
-        },
-        'default': function () {
-            res.send('Path not found');
-        }
-    });
+  res.status(404).format({
+    'text/html': function () {
+      res.render('modules/core/server/views/404', {
+        url: req.originalUrl
+      });
+    },
+    'application/json': function () {
+      res.json({
+        error: 'Path not found'
+      });
+    },
+    'default': function () {
+      res.send('Path not found');
+    }
+  });
 };

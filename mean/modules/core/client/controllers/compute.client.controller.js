@@ -15,24 +15,24 @@
     var statusUpdater;
 
     vm.UploadBinary = function () {
-        var file = $('#upload-input').get(0).files[0];
+      var file = $('#upload-input').get(0).files[0];
 
-        if (file) {
-            var formData = new FormData();
-            formData.append('uploads[]', file, vm.Cluster.Name + '/' + file.name);
+      if (file) {
+        var formData = new FormData();
+        formData.append('uploads[]', file, vm.Cluster.Name + '/' + file.name);
 
-            $.ajax({
-                url: '/api/upload/binary',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    vm.BinaryUrl = data;
-                    $scope.$apply();
-                }
-            });
-        }
+        $.ajax({
+          url: '/api/upload/binary',
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (data) {
+            vm.BinaryUrl = data;
+            $scope.$apply();
+          }
+        });
+      }
     };
 
     vm.VerifyClusterCount = function() {
