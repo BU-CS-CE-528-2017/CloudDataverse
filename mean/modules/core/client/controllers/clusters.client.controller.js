@@ -12,8 +12,7 @@
           $http.get('/api/list/clusters')
               .then(function (res) {
                   // at this point, res.data should contain JSON, put it in the frontend
-                  var resp = JSON.parse(res.data);
-                  vm.Clusters = resp.clusters;
+                  vm.Clusters = JSON.parse(res.data).clusters;
               });
       });
   }

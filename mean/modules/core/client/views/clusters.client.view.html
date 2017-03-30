@@ -3,17 +3,25 @@
         <form>
             <div class="row">
                 <div class="col-sm-12">
-                    <table class="table">
+                    <table class="table table-striped">
                         <thead class="thead-inverse">
                             <tr>
-                                <th>Cluster Name</th>
-                                <th>Plugin Name</th>
+                                <th>Name</th>
+                                <th>Plugin</th>
+                                <th>Version</th>
+                                <th>Status</th>
+                                <th>Master Nodes</th>
+                                <th>Worker Nodes</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="cluster in vm.Clusters">
                                 <th scope="row">{{cluster.name}}</th>
                                 <td>{{cluster.plugin_name}}</td>
+                                <td>{{cluster.hadoop_version}}</td>
+                                <td class="info loading">{{cluster.status}}</td>
+                                <td>{{cluster.node_groups[0].count}}</td>
+                                <td>{{cluster.node_groups[1].count}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -23,14 +31,13 @@
     </div>
 </section>
 
+
+
 <style>
 .navbar {
   margin-bottom: 0;
 }
 
-.open-stack-login{
-    margin-top: 1em;
-}
 
 .jumbotron {
   padding-top: 6rem;

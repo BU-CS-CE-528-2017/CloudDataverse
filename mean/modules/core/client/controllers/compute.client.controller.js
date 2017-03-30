@@ -56,7 +56,7 @@
               vm.Job = res.data.job_execution;
               statusUpdater = setInterval(updateJobStatus, 1000);
           });
-    }
+    };
 
     vm.VerifyClusterCount = function() {
       if (vm.Cluster.InstanceCount <= 0) {
@@ -105,7 +105,7 @@
                     $('#job-progress').removeClass('progress-bar-animated').removeClass('progress-bar-striped');
                 }
             });
-    }
+    };
 
     var updateLaunchStatus = function() {
       $http.get('/api/status/cluster/' + vm.ClusterDetails.id)

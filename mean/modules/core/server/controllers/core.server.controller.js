@@ -56,19 +56,19 @@ exports.listServers = function (req, res) {
 
     keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
         if (error) {
-            console.error('an error occured', error);
+            console.error('an error occurred', error);
             res.send('error');
         } else {
-            console.log('A project specific token has been retrived', project_token);
+            console.log('A project specific token has been retrieved', project_token);
             res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
             var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
 
             nova.listServers(function (error, servers_array) {
                 if (error) {
-                    console.error('an error occured', error);
+                    console.error('an error occurred', error);
                     res.send('error');
                 } else {
-                    console.log('A list of servers have been retrived', servers_array);
+                    console.log('A list of servers have been retrieved', servers_array);
                     res.json(servers_array);
                 }
             });
@@ -87,7 +87,7 @@ exports.getJobStatus = function (req, res) {
     request({
         url: sahara,
         method: 'GET',
-        headers: headers,
+        headers: headers
     }, function (error, response, body) {
         if (error) {
             console.log(error);
@@ -96,7 +96,7 @@ exports.getJobStatus = function (req, res) {
             res.json(body);
         }
     });
-}
+};
 
 exports.createJob = function (req, res) {
     var request = require('request');
@@ -154,7 +154,7 @@ exports.createJob = function (req, res) {
                 if (error) {
                     console.log(error);
                 } else {
-                    data_inputs.push(body.data_source.id)
+                    data_inputs.push(body.data_source.id);
                     //console.log(body.data_source);
                     resolve('Input Data Source Created');
                 }
@@ -165,7 +165,7 @@ exports.createJob = function (req, res) {
 
     // Create Output Data Source
     promises.push(new Promise(function (resolve, reject) {
-        console.log('Creating data source...')
+        console.log('Creating data source...');
         var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_sources[0].name + '_OUTPUT';
 
         var dataSource = {
@@ -197,7 +197,7 @@ exports.createJob = function (req, res) {
     console.log(promises);
     // Configure Job Binary from Upload
     promises.push(new Promise(function (resolve, reject) {
-        console.log('Creating job binary...')
+        console.log('Creating job binary...');
 
         var jobBinaryEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/job-binaries';
 
@@ -220,7 +220,7 @@ exports.createJob = function (req, res) {
                 console.log(error);
             } else {
                 //console.log(body.job_binary);
-                job_template.libs.push(body.job_binary.id)
+                job_template.libs.push(body.job_binary.id);
                 job_binary_id = body.job_binary.id;
                 resolve('Job Binary Created');
             }
@@ -229,7 +229,7 @@ exports.createJob = function (req, res) {
 
     // Create Job Template
     var generate_job = function () {
-        console.log('Creating job template...')
+        console.log('Creating job template...');
         var promise = new Promise(function (resolve, reject) {
             request({
                 url: 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/jobs',
@@ -251,7 +251,7 @@ exports.createJob = function (req, res) {
 
     // Execute Job
     var execute_job = function () {
-        console.log('Executing job...')
+        console.log('Executing job...');
         start_job_template.input_id = data_inputs[0];
         start_job_template.output_id = data_outputs[0];
 
@@ -325,7 +325,7 @@ exports.launchInstance = function (req, res) {
                 'nimbus'
             ];
             workerNodeProcesses = [
-                'supervisor',
+                'supervisor'
             ];
             zookeeperNodeProcesses = [
                 'zookeeper'
@@ -693,6 +693,36 @@ exports.listClusters = function (req, res) {
             res.json(body);
         }
     });
+};
+
+exports.listJobs = function (req, res) {
+    var request = require('request');
+    var listJobEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/job-executions';
+
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    var options = {
+        url: listJobEndpoint,
+        headers: headers
+    };
+
+    request({
+        url: listJobEndpoint,
+        method: 'GET',
+        headers: headers
+    }, function (error, response, body) {
+        if (error) {
+            console.log(error);
+            res.send('ERROR');
+        } else {
+            console.log(response.statusCode, body);
+            res.json(body);
+        }
+    });
+
 };
 
 exports.openStackAuth = function (req, res) {

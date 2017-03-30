@@ -15,10 +15,11 @@ module.exports = function (app) {
     app.get('/api/list/plugins', core.listPlugins);
     app.get('/api/list/networks', core.listNetworks);
     app.get('/api/list/clusters', core.listClusters);
+    app.get('/api/list/jobs', core.listJobs);
     app.post('/api/launch', core.launchInstance);
     app.get('/api/status/cluster/:id', core.getClusterStatus);
     app.post('/api/upload/binary', core.uploadBinary);
-    app.post('/api/create/data_job', core.createJob)
+    app.post('/api/create/data_job', core.createJob);
     app.get('/api/status/job/:id', core.getJobStatus);
     app.route('/compute').get(core.renderCompute);
 

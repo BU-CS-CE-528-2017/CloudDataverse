@@ -1,7 +1,32 @@
 <section ng-controller="JobController as vm" class="jumbotron">
     <div style="margin-top: -3em;" class="container">
         <form>
-           <h4>This is the jobs page.</h4>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-striped">
+                        <thead class="thead-inverse">
+                        <tr>
+                            <th>ID</th>
+                            <th>Job Template</th>
+                            <th>Cluster</th>
+                            <th>Status</th>
+                            <th>Duration</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="job in vm.Jobs">
+                            <th scope="row">{{job.id}}</th>
+                            <td>MRSampleJob</td>
+                            <td>MapReduceCLUSTER</td>
+                            <td><div class="progress">
+                                <div id="job-progress" ng-hide="job.info.status == 'SUCCEEDED' || job.info.status == 'KILLED'" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;"></div>
+                            </div>{{job.info.status}}</td>
+                            <td>{{job.duration | date: 'H:mm:ss': 'UTC'}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </form>
     </div>
 </section>
@@ -9,6 +34,10 @@
 <style>
 .navbar {
   margin-bottom: 0;
+}
+
+.progress {
+    margin-bottom: 0 !important;
 }
 
 .open-stack-login{
