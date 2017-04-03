@@ -141,7 +141,7 @@ exports.createJob = function (req, res) {
                 "name": input_sources[i].name + '_INPUT',
                 'credentials': {
                     'user': 'bcorn@bu.edu',
-                    'password': 'LTOyrp5plB!'
+                    'password': 'XXXXXXXXXXX'
                 }
             };
 
@@ -174,7 +174,7 @@ exports.createJob = function (req, res) {
             'name': input_sources[0].name + '_OUTPUT',
             'credentials': {
                 'user': 'bcorn@bu.edu',
-                'password': 'LTOyrp5plB!'
+                'password': 'XXXXXX'
             }
         };
 
@@ -205,7 +205,7 @@ exports.createJob = function (req, res) {
             'url': 'swift://' + req.body.binary_url,
             'name': req.body.container_name + '_BINARY',
             'extra': {
-                'password': 'LTOyrp5plB!',
+                'password': 'XXXXXXXX',
                 'user': 'bcorn@bu.edu'
             }
         };
