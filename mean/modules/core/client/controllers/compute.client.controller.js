@@ -17,6 +17,30 @@
         {
             url: 'MapReduceSample/sample_input.txt',
             name: 'MapReduceSample'
+        },
+        {
+            url: 'MapReduceSample/sample_input2.txt',
+            name: 'MapReduceSample'
+        },
+        {
+            url: 'MapReduceSample/sample_input3.txt',
+            name: 'MapReduceSample'
+        },
+        {
+            url: 'MapReduceSample/sample_input4.txt',
+            name: 'MapReduceSample'
+        },
+        {
+            url: 'MapReduceSample/sample_input5.txt',
+            name: 'MapReduceSample'
+        },
+        {
+            url: 'MapReduceSample/sample_input6.txt',
+            name: 'MapReduceSample'
+        },
+        {
+            url: 'MapReduceSample/sample_input7.txt',
+            name: 'MapReduceSample'
         }
     ];
 
