@@ -25,7 +25,7 @@ exports.renderIndex = function (req, res) {
             additionalProvidersData: req.user.additionalProvidersData
         };
     }
-    if (req.cookies['X-Subject-Token'] != undefined) {
+    if (req.cookies['X-Subject-Token'] && req.cookies['X-Project-Token']) {
         res.redirect('/compute');
     }
     else {
@@ -42,9 +42,14 @@ exports.renderIndex = function (req, res) {
  * Render the compute page
  */
 exports.renderCompute = function (req, res) {
-    res.render('modules/core/server/views/compute', {
-        sharedConfig: JSON.stringify(config.shared)
-    });
+    if (!req.cookies['X-Subject-Token'] || !req.cookies['X-Project-Token']) {
+        res.redirect('/');
+    }
+    else {
+        res.render('modules/core/server/views/compute', {
+            sharedConfig: JSON.stringify(config.shared)
+        });
+    }
 };
 
 /**
@@ -59,7 +64,6 @@ exports.renderServerError = function (req, res) {
 exports.listServers = function (req, res) {
     var OSWrap = require('openstack-wrapper');
     var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
-
     keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
         if (error) {
             console.error('an error occurred', error);

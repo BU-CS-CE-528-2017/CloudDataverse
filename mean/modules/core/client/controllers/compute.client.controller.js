@@ -170,8 +170,6 @@
 
     $http.get('/api/list/servers')
       .then(function(res) {
-        if (res.data === 'error')
-          window.location.href = '/';
 
         vm.ServerList = res.data;
         var flavors = {};
