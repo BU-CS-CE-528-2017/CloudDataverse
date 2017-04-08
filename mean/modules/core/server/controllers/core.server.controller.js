@@ -25,11 +25,17 @@ exports.renderIndex = function (req, res) {
             additionalProvidersData: req.user.additionalProvidersData
         };
     }
+    if (req.cookies['X-Subject-Token'] != undefined) {
+        res.redirect('/compute');
+    }
+    else {
+        console.log('render index')
+        res.render('modules/core/server/views/index', {
+            user: JSON.stringify(safeUserObject),
+            sharedConfig: JSON.stringify(config.shared)
+        });
+    }
 
-    res.render('modules/core/server/views/index', {
-        user: JSON.stringify(safeUserObject),
-        sharedConfig: JSON.stringify(config.shared)
-    });
 };
 
 /**
@@ -60,7 +66,7 @@ exports.listServers = function (req, res) {
             res.send('error');
         } else {
             console.log('A project specific token has been retrieved', project_token);
-            res.cookie('X-Project-Token', project_token.token, { maxAge: 900000, httpOnly: true });
+            res.cookie('X-Project-Token', project_token.token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
             var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
 
             nova.listServers(function (error, servers_array) {
@@ -736,8 +742,8 @@ exports.openStackAuth = function (req, res) {
             console.error('An error occurred while authenticating the user with Open Stack.');
         } else {
             // creating cookie for auth token
-            res.cookie('X-Subject-Token', token.token, { maxAge: 900000, httpOnly: true });
-            res.cookie('Project-Id', token.project.id, { maxAge: 900000, httpOnly: true });
+            res.cookie('X-Subject-Token', token.token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+            res.cookie('Project-Id', token.project.id, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
             res.send('User authenticated');
         }
     });
