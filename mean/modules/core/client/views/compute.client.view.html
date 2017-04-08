@@ -5,13 +5,13 @@
     <!-- Nav tabs -->
     <ul class="nav nav-pills" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#dataset" role="tab">Dataset</a>
+            <a class="nav-link active" data-toggle="tab" href="#dataset" role="tab">1. Dataset</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#compute" role="tab">Compute</a>
+            <a class="nav-link" data-toggle="tab" href="#compute" role="tab">2. Launch</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#jobs" role="tab">Jobs</a>
+            <a class="nav-link" data-toggle="tab" href="#jobs" role="tab">3. Compute</a>
         </li>
     </ul>
 
@@ -50,161 +50,226 @@
                     <span ng-show="vm.ConfigMode">Show Basic Settings</span>
                 </button>-->
                 <div ng-show="!vm.ConfigMode" style="margin-top: 1em;" id="basic-mode">
-                    <div>
-                        <h4 style="font-weight: 200; margin-top: 0em;">General Configuration</h4>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Select Plugin</label>
-                                    <select ng-init="vm.Cluster.Plugin = 'vanilla'" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.name as plugin.title for plugin in vm.Plugins"></select>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <small>Master Processes:<br /></small>
-                                            <small ng-if="vm.Cluster.Plugin == 'vanilla'">
-                                                namenode, resourcemanager, oozie, historyserver
-                                            </small>
-                                            <small ng-if="vm.Cluster.Plugin == 'spark'">
-                                                namenode, master
-                                            </small>
-                                            <small ng-if="vm.Cluster.Plugin == 'storm'">
-                                                nimbus
-                                            </small>
+                    <div id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="card">
+                            <div class="card-header" role="tab" id="headingOne">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        Choose Existing Cluster
+                                    </a>
+                                </h5>
+                            </div>
+
+                            <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="card-block">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" role="tab" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Create New Cluster from Template
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                <div class="card-block">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" role="tab" id="headingThree">
+                                <h5 class="mb-0">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                        Create New Cluster from Scratch
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
+                                <div class="card-block">
+                                    <div>
+                                        <h4 style="font-weight: 200; margin-top: 0em;">General Configuration</h4>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Select Plugin</label>
+                                                    <select ng-init="vm.Cluster.Plugin = 'vanilla'" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.name as plugin.title for plugin in vm.Plugins"></select>
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <small>Master Processes:<br /></small>
+                                                            <small ng-if="vm.Cluster.Plugin == 'vanilla'">
+                                                                namenode, resourcemanager, oozie, historyserver
+                                                            </small>
+                                                            <small ng-if="vm.Cluster.Plugin == 'spark'">
+                                                                namenode, master
+                                                            </small>
+                                                            <small ng-if="vm.Cluster.Plugin == 'storm'">
+                                                                nimbus
+                                                            </small>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <small>Worker Processes:<br /></small>
+                                                            <small ng-if="vm.Cluster.Plugin == 'vanilla'">
+                                                                datanode, nodemanager
+                                                            </small>
+                                                            <small ng-if="vm.Cluster.Plugin == 'spark'">
+                                                                datanode, slave
+                                                            </small>
+                                                            <small ng-if="vm.Cluster.Plugin == 'storm'">
+                                                                supervisor
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Cluster Name</label>
+                                                    <input class="form-control" required ng-model="vm.Cluster.Name" placeholder="My cluster" type="text" />
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <small>Worker Processes:<br /></small>
-                                            <small ng-if="vm.Cluster.Plugin == 'vanilla'">
-                                                datanode, nodemanager
-                                            </small>
-                                            <small ng-if="vm.Cluster.Plugin == 'spark'">
-                                                datanode, slave
-                                            </small>
-                                            <small ng-if="vm.Cluster.Plugin == 'storm'">
-                                                supervisor
-                                            </small>
+                                        <hr />
+                                        <h4 style="font-weight: 200;">Hardware Configuration</h4>
+                                        <div class="row">
+                                            <div class="col-sm-9">
+                                                <div class="form-group">
+                                                    <label>Instance Type</label>
+                                                    <select ng-init="vm.Cluster.Flavor = '2'" class="form-control" required ng-model="vm.Cluster.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label>Number of Instances</label>
+                                                    <input ng-change="vm.VerifyClusterCount()" required ng-init="vm.Cluster.InstanceCount = 3" class="form-control" type="number" ng-model="vm.Cluster.InstanceCount" />
+                                                    <small>(1 master and {{vm.Cluster.NodeCount}} nodes)</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <h4 style="font-weight: 200;">Security and Access</h4>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Key Pair</label>
+                                                    <select class="form-control" required ng-model="vm.Cluster.KeyPair" ng-options="kp.name as kp.name for kp in vm.KeyPairs"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Network</label>
+                                                    <select class="form-control" required ng-model="vm.Cluster.Network" ng-options="net.id as net.name for net in vm.Networks"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div ng-show="vm.LaunchSuccess" class="row">
+                                        <hr />
+                                        <div class="col-sm-12">
+                                            <div style="word-wrap:break-word;" class="card card-block" role="alert">
+                                                <div class="progress">
+                                                    <div id="cluster-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;">{{vm.ClusterDetails.status}}</div>
+                                                </div>
+                                                <br />
+                                                <b>Cluster name:</b> {{vm.ClusterDetails.name}}
+                                                <br />
+                                                <b>Cluster public key:</b> {{vm.ClusterDetails.management_public_key}}
+                                                <br />
+                                                <b>Created at:</b> {{vm.ClusterDetails.created_at}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="row justify-content-end">
+                                        <div class="col col-sm-2">
+                                            <div class="form-group">
+                                                <button href="" ng-click="vm.LaunchCluster(); vm.Launching = true;" ng-disabled="vm.Launching" style="margin-top: 1em; float: right;" class="btn btn-primary btn-block">Launch Cluster</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Cluster Name</label>
-                                    <input class="form-control" required ng-model="vm.Cluster.Name" placeholder="My cluster" type="text" />
-                                </div>
-                            </div>
                         </div>
-                        <hr />
-                        <h4 style="font-weight: 200;">Hardware Configuration</h4>
-                        <div class="row">
-                            <div class="col-sm-9">
-                                <div class="form-group">
-                                    <label>Instance Type</label>
-                                    <select ng-init="vm.Cluster.Flavor = '2'" class="form-control" required ng-model="vm.Cluster.Flavor" ng-options="flavor.id as flavor.name for flavor in vm.Flavors"></select>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
-                                    <label>Number of Instances</label>
-                                    <input ng-change="vm.VerifyClusterCount()" required ng-init="vm.Cluster.InstanceCount = 3" class="form-control" type="number" ng-model="vm.Cluster.InstanceCount" />
-                                    <small>(1 master and {{vm.Cluster.NodeCount}} nodes)</small>
-                                </div>
-                            </div>
-                        </div>
-                        <hr />
-                        <h4 style="font-weight: 200;">Security and Access</h4>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Key Pair</label>
-                                    <select class="form-control" required ng-model="vm.Cluster.KeyPair" ng-options="kp.name as kp.name for kp in vm.KeyPairs"></select>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Network</label>
-                                    <select class="form-control" required ng-model="vm.Cluster.Network" ng-options="net.id as net.name for net in vm.Networks"></select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr />
-                    <div class="job-upload">
+                    </div>                    
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane" id="jobs" role="tabpanel">
+            <hr />
+            <div class="job-upload">
+                <div class="row">
+                    <div class="col-sm-12">
                         <div class="row">
                             <div class="col-sm-12">
+                                <h4 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">Job Input File(s)</h4>
+                                <ul class="list-group">
+                                    <li ng-repeat="obj in vm.SelectedFiles" class="list-group-item">
+                                        <span>{{obj.name}}</span>&nbsp;-&nbsp;
+                                        <span class="text-muted">({{obj.url}})</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row" style="margin-bottom: 2em;">
+                            <div class="col-sm-6">
                                 <div class="row" style="margin-bottom: 2em;">
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-12">
+                                        <h4 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">OpenStack Credentials for Swift</h4>
+                                        <form class="form-inline">
+                                            <label class="sr-only" for="inlineFormInput">Name</label>
+                                            <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="inlineFormInput" placeholder="Username">
+
+                                            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                                <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Password">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <div class="col-sm-12">
                                         <h4 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">Upload Job Binary</h4>
                                         <input id="upload-input" type="file" name="uploads[]">
                                         <button ng-click="vm.UploadBinary()" class="btn btn-primary upload-btn" type="button">Upload Binary</button>
                                     </div>
-                                    <br />
-                                    <div class="col-sm-6">
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
                                         <div style="word-wrap:break-word;" ng-show="vm.BinaryUrl != ''" class="card card-block" role="alert">
                                             <small class="text-muted">{{vm.BinaryUrl}}</small>
                                         </div>
                                     </div>
                                 </div>
-                                <hr />
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <h4 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">Job Input File(s)</h4>
-                                        <ul class="list-group">
-                                            <li ng-repeat="obj in vm.SelectedFiles" class="list-group-item">
-                                                <span>{{obj.name}}</span>&nbsp;-&nbsp;
-                                                <span class="text-muted">({{obj.url}})</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div style="word-wrap:break-word;" ng-show="vm.LaunchSuccess" class="card card-block" role="alert">
-                                    <div class="progress">
-                                        <div id="cluster-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;">{{vm.ClusterDetails.status}}</div>
-                                    </div>
-                                    <br />
-                                    <b>Cluster name:</b> {{vm.ClusterDetails.name}}
-                                    <br />
-                                    <b>Cluster public key:</b> {{vm.ClusterDetails.management_public_key}}
-                                    <br />
-                                    <b>Created at:</b> {{vm.ClusterDetails.created_at}}
-                                </div>
-                            </div>
+                            <br />
                         </div>
                         <hr />
-                        <div class="row justify-content-end">
-                            <div class="col col-sm-2">
-                                <div class="form-group">
-                                    <button href="" ng-click="vm.LaunchCluster(); vm.Launching = true;" ng-disabled="vm.Launching" style="margin-top: 1em; float: right;" class="btn btn-primary btn-block">Launch Cluster</button>
-                                </div>
-                            </div>
-                        </div>
+                        <button style="float: right;" type="button" class="btn btn-primary">Create Job(s)</button>
                     </div>
-                    <div ng-show="vm.Job != undefined" class="job-monitoring">
-                        <hr />
-                        <h4 style="font-weight: 200; margin-top: 0em;">Job Monitoring</h4>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="progress">
-                                    <div id="job-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;">{{vm.Job.info.status}}</div>
-                                </div>
-                                <br />
-                                <div ng-show="vm.Job.info.status == 'SUCCEEDED'" class="card card-block">
-                                    <span>Output available at: /{{vm.Cluster.Name}}/{{vm.InputFiles[0].name + '_OUTPUT'}}</span>
-                                </div>
+                </div>
+                <div ng-show="vm.Job != undefined" class="job-monitoring">
+                    <hr />
+                    <h4 style="font-weight: 200; margin-top: 0em;">Job Monitoring</h4>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="progress">
+                                <div id="job-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;">{{vm.Job.info.status}}</div>
+                            </div>
+                            <br />
+                            <div ng-show="vm.Job.info.status == 'SUCCEEDED'" class="card card-block">
+                                <span>Output available at: /{{vm.Cluster.Name}}/{{vm.InputFiles[0].name + '_OUTPUT'}}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <br />
-            </form>
+            </div>
         </div>
-        <div class="tab-pane" id="jobs" role="tabpanel">
-
-        </div>
-    </div>
 </section>
 
 <style>
@@ -214,6 +279,20 @@
 
     .open-stack-login {
         margin-top: 1em;
+    }
+
+    .card{
+        border-radius: 0;
+    }
+
+    .mb-0 > a{
+        font-weight: 400;
+        color: #292b2c;
+    }
+
+    .mb-0 >a:hover{
+        text-decoration:none;
+        color: rgb(28, 29, 30);
     }
 
     .jumbotron {
