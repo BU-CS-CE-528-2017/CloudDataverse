@@ -61,22 +61,53 @@ exports.renderServerError = function (req, res) {
     });
 };
 
+exports.listClusterTemplates = function (req, res) {
+    var request = require('request');
+    var listClusterTemplatesEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/cluster-templates';
+
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    var options = {
+        url: listClusterTemplatesEndpoint,
+        headers: headers
+    };
+
+    request({
+        url: listClusterTemplatesEndpoint,
+        method: 'GET',
+        headers: headers
+    }, function (error, response, body) {
+        if (error) {
+            console.log(error);
+            res.send('ERROR');
+        } else {
+            console.log(response.statusCode, body);
+            res.json(body);
+        }
+    });
+}
+
 exports.listServers = function (req, res) {
     var OSWrap = require('openstack-wrapper');
     var keystone = new OSWrap.Keystone('https://keystone.kaizen.massopencloud.org:5000/v3');
     keystone.getProjectToken(req.cookies['X-Subject-Token'], req.cookies['Project-Id'], function (error, project_token) {
         if (error) {
+            res.clearCookie("X-Subject-Token");
             console.error('an error occurred', error);
-            res.send('error');
+            res.redirect('/');
         } else {
             console.log('A project specific token has been retrieved', project_token);
-            res.cookie('X-Project-Token', project_token.token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+            res.cookie('X-Project-Token', project_token.token, { maxAge: 60 * 60 * 1000, httpOnly: true });
             var nova = new OSWrap.Nova('https://nova.kaizen.massopencloud.org:8774/v2/' + project_token.project.id, project_token.token);
 
             nova.listServers(function (error, servers_array) {
                 if (error) {
+                    res.clearCookie("X-Subject-Token");
                     console.error('an error occurred', error);
-                    res.send('error');
+                    res.redirect('/');
                 } else {
                     console.log('A list of servers have been retrieved', servers_array);
                     res.json(servers_array);
@@ -746,8 +777,8 @@ exports.openStackAuth = function (req, res) {
             console.error('An error occurred while authenticating the user with Open Stack.');
         } else {
             // creating cookie for auth token
-            res.cookie('X-Subject-Token', token.token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
-            res.cookie('Project-Id', token.project.id, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+            res.cookie('X-Subject-Token', token.token, { maxAge: 60 * 60 * 1000, httpOnly: true });
+            res.cookie('Project-Id', token.project.id, { maxAge: 60 * 60 * 1000, httpOnly: true });
             res.send('User authenticated');
         }
     });

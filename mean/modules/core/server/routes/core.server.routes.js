@@ -14,6 +14,7 @@ module.exports = function (app) {
     app.get('/api/list/keypairs', core.listKeyPairs);
     app.get('/api/list/plugins', core.listPlugins);
     app.get('/api/list/networks', core.listNetworks);
+    app.get('/api/list/cluster_templates', core.listClusterTemplates)
     app.get('/api/list/clusters', core.listClusters);
     app.get('/api/list/jobs', core.listJobs);
     app.post('/api/launch', core.launchInstance);

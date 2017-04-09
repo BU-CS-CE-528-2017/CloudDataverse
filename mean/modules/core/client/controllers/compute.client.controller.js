@@ -44,6 +44,10 @@
         }
     ];
 
+    vm.nextTab = function () {
+        $('.compute-pill').trigger('click')
+    }
+
     vm.UploadBinary = function () {
         var file = $('#upload-input').get(0).files[0];
         vm.BinaryFileName = file.name;
@@ -171,6 +175,7 @@
     $http.get('/api/list/servers')
       .then(function(res) {
 
+
         vm.ServerList = res.data;
         var flavors = {};
         var plugins = {};
@@ -202,6 +207,16 @@
                         vm.Flavors = flavors;
                         vm.Plugins = plugins;
                       });
+                  });
+
+                $http.get('/api/list/clusters')
+                  .then(function (res) {
+                      vm.Clusters = JSON.parse(res.data).clusters;
+                  });
+
+                $http.get('/api/list/cluster_templates')
+                  .then(function (res) {
+                      vm.ClusterTemplates = JSON.parse(res.data).cluster_templates;
                   });
               });
           });
