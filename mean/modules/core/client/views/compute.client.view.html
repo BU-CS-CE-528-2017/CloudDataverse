@@ -11,7 +11,7 @@
             <a class="nav-link" data-toggle="tab" href="#compute" role="tab">2. Launch</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#jobs" role="tab">3. Compute</a>
+            <a class="nav-link compute-pill" data-toggle="tab" href="#jobs" role="tab">3. Compute</a>
         </li>
     </ul>
 
@@ -62,7 +62,35 @@
 
                             <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
                                 <div class="card-block">
-                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Name</th>
+                                                <th>Plugin</th>
+                                                <th>Masters</th>
+                                                <th>Workers</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="t in vm.Clusters">
+                                                <th scope="row">
+                                                    <div class="custom-controls-stacked">
+                                                        <label class="custom-control custom-radio">
+                                                            <input ng-value="t.id" ng-model="vm.SelectedCluster" name="existingCluster" type="radio" class="custom-control-input">
+                                                            <span class="custom-control-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                </th>
+                                                <td>{{t.name}}</td>
+                                                <td>{{t.plugin_name}}</td>
+                                                <td>{{t.node_groups[0].count}}</td>
+                                                <td>{{t.node_groups[1].count}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <hr />
+                                    <button ng-show="vm.SelectedCluster" ng-click="vm.nextTab()" style="float: right; margin-bottom: 1em;" class="btn btn-primary">Next Step</button>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +104,35 @@
                             </div>
                             <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
                                 <div class="card-block">
-                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Name</th>
+                                                <th>Plugin</th>
+                                                <th>Masters</th>
+                                                <th>Workers</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="t in vm.ClusterTemplates">
+                                                <th scope="row">
+                                                    <div class="custom-controls-stacked">
+                                                        <label class="custom-control custom-radio">
+                                                            <input ng-value="t.id" ng-model="vm.SelectedClusterTemplate" name="existingCluster" type="radio" class="custom-control-input">
+                                                            <span class="custom-control-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                </th>
+                                                <td>{{t.name}}</td>
+                                                <td>{{t.plugin_name}}</td>
+                                                <td>{{t.node_groups[0].count}}</td>
+                                                <td>{{t.node_groups[1].count}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <hr />
+                                    <button style="float: right; margin-bottom: 1em;" class="btn btn-primary">Launch Cluster</button>
                                 </div>
                             </div>
                         </div>
@@ -193,7 +249,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </form>
         </div>
@@ -270,6 +326,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </section>
 
 <style>
@@ -281,19 +338,19 @@
         margin-top: 1em;
     }
 
-    .card{
+    .card {
         border-radius: 0;
     }
 
-    .mb-0 > a{
+    .mb-0 > a {
         font-weight: 400;
         color: #292b2c;
     }
 
-    .mb-0 >a:hover{
-        text-decoration:none;
-        color: rgb(28, 29, 30);
-    }
+        .mb-0 > a:hover {
+            text-decoration: none;
+            color: rgb(28, 29, 30);
+        }
 
     .jumbotron {
         padding-top: 6rem;
