@@ -11,6 +11,7 @@ var conf = require(path.resolve('./config'));
  */
 exports.renderIndex = function (req, res) {
     var safeUserObject = null;
+    res.cookie('X-Container-Id', req.params.container, { maxAge: 60 * 60 * 1000, httpOnly: true });
     if (req.user) {
         safeUserObject = {
             displayName: validator.escape(req.user.displayName),
@@ -29,7 +30,7 @@ exports.renderIndex = function (req, res) {
         res.redirect('/compute');
     }
     else {
-        console.log('render index')
+        console.log('Subject or Project Token Missing')
         res.render('modules/core/server/views/index', {
             user: JSON.stringify(safeUserObject),
             sharedConfig: JSON.stringify(config.shared)
