@@ -338,6 +338,10 @@ exports.listContainerObjects = function (req, res) {
     });
 };
 
+exports.createClusterFromTemplate = function (req, res) {
+
+}
+
 exports.launchInstance = function (req, res) {
     var request = require('request');
 

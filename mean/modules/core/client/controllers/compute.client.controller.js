@@ -13,36 +13,6 @@
     vm.Cluster = {};
     vm.Cluster.NodeCount = 2;
     var statusUpdater;
-    vm.InputFiles = [
-        {
-            url: 'MapReduceSample/sample_input.txt',
-            name: 'MapReduceSample'
-        },
-        {
-            url: 'MapReduceSample/sample_input2.txt',
-            name: 'MapReduceSample'
-        },
-        {
-            url: 'MapReduceSample/sample_input3.txt',
-            name: 'MapReduceSample'
-        },
-        {
-            url: 'MapReduceSample/sample_input4.txt',
-            name: 'MapReduceSample'
-        },
-        {
-            url: 'MapReduceSample/sample_input5.txt',
-            name: 'MapReduceSample'
-        },
-        {
-            url: 'MapReduceSample/sample_input6.txt',
-            name: 'MapReduceSample'
-        },
-        {
-            url: 'MapReduceSample/sample_input7.txt',
-            name: 'MapReduceSample'
-        }
-    ];
 
     vm.nextTab = function () {
         $('.compute-pill').trigger('click')
@@ -70,12 +40,12 @@
         }
     };
 
-    vm.TestJobLaunch = function () {
+    vm.CreateJob = function () {
         var job = {
             'job_type': 'MapReduce',
             'container_name': vm.Cluster.Name,
             'cluster_id': '79e92551-7bd0-4ed4-887d-f80eb39e5c94',
-            'input_sources': vm.InputFiles,
+            'input_sources': vm.SelectedFiles[0],
             'binary_url': vm.Cluster.Name + '/' + vm.BinaryFileName
         };
 
@@ -174,8 +144,6 @@
 
     $http.get('/api/list/servers')
       .then(function(res) {
-
-
         vm.ServerList = res.data;
         var flavors = {};
         var plugins = {};

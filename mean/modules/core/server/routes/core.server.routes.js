@@ -22,6 +22,7 @@ module.exports = function (app) {
     app.get('/api/container/list', core.listContainerObjects)
     app.get('/api/status/cluster/:id', core.getClusterStatus);
     app.post('/api/upload/binary', core.uploadBinary);
+    app.post('/api/create/cluster_from_template', core.createClusterFromTemplate)
     app.post('/api/create/data_job', core.createJob);
     app.get('/api/status/job/:id', core.getJobStatus);
     app.route('/compute').get(core.renderCompute);
