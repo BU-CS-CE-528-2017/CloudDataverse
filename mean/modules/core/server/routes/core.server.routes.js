@@ -29,5 +29,5 @@ module.exports = function (app) {
 
     // Define application route
     app.route('/').get(core.renderIndex);
-    app.route('/dvinput/:container', core.renderIndex);
+    app.route('/dvinput/:container').get(core.renderIndex);
 };
