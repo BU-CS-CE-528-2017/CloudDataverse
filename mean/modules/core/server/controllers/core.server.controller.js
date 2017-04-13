@@ -308,6 +308,36 @@ exports.createJob = function (req, res) {
 
 };
 
+exports.listContainerObjects = function (req, res) {
+    var request = require('request');
+    var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/';
+
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    var r = {
+        format: 'json'
+    };
+
+    request({
+        url: swift + req.cookies['X-Container-Id'],
+        method: 'GET',
+        headers: headers,
+        qs: r
+    }, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            var resp = {};
+            resp.objects = JSON.parse(body);
+            resp.container_id = req.cookies['X-Container-Id'];
+            res.json(resp);
+        }
+    });
+};
+
 exports.launchInstance = function (req, res) {
     var request = require('request');
 

@@ -28,15 +28,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="file in vm.InputFiles">
+                    <tr ng-repeat="obj in vm.ContainerObjects.objects">
                         <th scope="row">
                             <label class="custom-control custom-checkbox">
-                                <input checklist-model="vm.SelectedFiles" checklist-value="file" type="checkbox" class="custom-control-input">
+                                <input checklist-model="vm.SelectedFiles" checklist-value="obj" type="checkbox" class="custom-control-input">
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </th>
-                        <td>{{file.url}}</td>
-                        <td>1MB</td>
+                        <td>{{vm.ContainerObjects.container_id + '/' + obj.name}}</td>
+                        <td>{{obj.bytes}} bytes</td>
                     </tr>
                 </tbody>
             </table>
@@ -264,7 +264,7 @@
                                 <ul class="list-group">
                                     <li ng-repeat="obj in vm.SelectedFiles" class="list-group-item">
                                         <span>{{obj.name}}</span>&nbsp;-&nbsp;
-                                        <span class="text-muted">({{obj.url}})</span>
+                                        <span class="text-muted">({{vm.ContainerObjects.container_id + '/' + obj.name}})</span>
                                     </li>
                                 </ul>
                             </div>

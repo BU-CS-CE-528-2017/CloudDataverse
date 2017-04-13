@@ -184,41 +184,43 @@
 
         $http.get('/api/list/flavors')
           .then(function(res) {
-            flavors = res.data;
+              vm.Flavors = res.data;
 
-            $http.get('/api/list/plugins')
-              .then(function(res) {
-                var resp = JSON.parse(res.data);
-                plugins = resp.plugins;
+            //$http.get('/api/list/plugins')
+            //  .then(function(res) {
+            //    var resp = JSON.parse(res.data);
+            //    vm.Plugins = resp.plugins;                
+            //  });
 
-                $http.get('/api/list/keypairs')
-                  .then(function(res) {
+            $http.get('/api/list/keypairs')
+                .then(function (res) {
                     keypairs = res.data;
 
                     $http.get('/api/list/networks')
-                      .then(function(res) {
-                        vm.KeyPairs = keypairs;
-                        vm.Cluster.KeyPair = vm.KeyPairs[0].name;
+                      .then(function (res) {
+                          vm.KeyPairs = keypairs;
+                          vm.Cluster.KeyPair = vm.KeyPairs[0].name;
 
-                        vm.Networks = res.data;
-                        vm.Networks = vm.Networks.splice(1, 1);
-                        vm.Cluster.Network = vm.Networks[0].id;
-
-                        vm.Flavors = flavors;
-                        vm.Plugins = plugins;
+                          vm.Networks = res.data;
+                          vm.Networks = vm.Networks.splice(1, 1);
+                          vm.Cluster.Network = vm.Networks[0].id;
                       });
-                  });
+                });
 
-                $http.get('/api/list/clusters')
-                  .then(function (res) {
-                      vm.Clusters = JSON.parse(res.data).clusters;
-                  });
+            //$http.get('/api/list/clusters')
+            //  .then(function (res) {
+            //      vm.Clusters = JSON.parse(res.data).clusters;
+            //  });
 
-                $http.get('/api/list/cluster_templates')
-                  .then(function (res) {
-                      vm.ClusterTemplates = JSON.parse(res.data).cluster_templates;
-                  });
-              });
+            //$http.get('/api/list/cluster_templates')
+            //  .then(function (res) {
+            //      vm.ClusterTemplates = JSON.parse(res.data).cluster_templates;
+            //  });
+
+            $http.get('/api/container/list')
+              .then(function (res) {
+                  vm.ContainerObjects = res.data;
+              })
           });
       });
   }
