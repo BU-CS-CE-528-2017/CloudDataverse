@@ -11,29 +11,13 @@ var conf = require(path.resolve('./config'));
  */
 exports.renderIndex = function (req, res) {
     var safeUserObject = null;
-    res.cookie('X-Container-Id', req.params.container, { maxAge: 60 * 60 * 1000, httpOnly: true });
-    if (req.user) {
-        safeUserObject = {
-            displayName: validator.escape(req.user.displayName),
-            provider: validator.escape(req.user.provider),
-            username: validator.escape(req.user.username),
-            created: req.user.created.toString(),
-            roles: req.user.roles,
-            profileImageURL: req.user.profileImageURL,
-            email: validator.escape(req.user.email),
-            lastName: validator.escape(req.user.lastName),
-            firstName: validator.escape(req.user.firstName),
-            additionalProvidersData: req.user.additionalProvidersData
-        };
-    }
+
     if (req.cookies['X-Subject-Token'] && req.cookies['X-Project-Token']) {
         res.redirect('/compute');
     }
     else {
         console.log('Subject or Project Token Missing')
         res.render('modules/core/server/views/index', {
-            user: JSON.stringify(safeUserObject),
-            sharedConfig: JSON.stringify(config.shared)
         });
     }
 
@@ -43,7 +27,7 @@ exports.renderIndex = function (req, res) {
  * Render the compute page
  */
 exports.renderCompute = function (req, res) {
-    if (!req.cookies['X-Subject-Token'] || !req.cookies['X-Project-Token']) {
+    if (!req.cookies['X-Subject-Token']) {
         res.redirect('/');
     }
     else {
@@ -784,6 +768,11 @@ exports.openStackAuth = function (req, res) {
         }
     });
 };
+
+exports.captureContainer = function (req, res) {
+    res.cookie('X-Container-Id', req.params.container, { maxAge: 60 * 60 * 1000, httpOnly: true });
+    res.redirect('/');
+}
 
 /**
  * Render the server not found responses
