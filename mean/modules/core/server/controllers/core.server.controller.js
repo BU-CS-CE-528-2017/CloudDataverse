@@ -339,7 +339,53 @@ exports.listContainerObjects = function (req, res) {
 };
 
 exports.createClusterFromTemplate = function (req, res) {
+    var pluginVersion, defaultImageId;
 
+    switch (req.body.plugin_name) {
+        case 'vanilla':
+            pluginVersion = '2.7.1';
+            defaultImageId = '64599610-2952-4a1f-9291-2711c966905c';
+            break;
+        case 'spark':
+            pluginVersion = '1.6.0';
+            defaultImageId = '68abdc64-b0ac-48a7-bbf5-43a04ccffa7e';
+            break;
+        case 'storm':
+            pluginVersion = '0.9.2';
+            defaultImageId = 'df9982fb-aac7-48d4-ad78-93c3105a5d68';
+            break;
+    }
+    var launchTemplate = {
+        'plugin_name': req.body.plugin_name,
+        'hadoop_version': pluginVersion,
+        'cluster_template_id': req.body.template_id,
+        'default_image_id': defaultImageId,
+        'user_keypair_id': req.body.user_keypair_id,
+        'name': req.body.name + 'CLUSTER',
+        'neutron_management_network': req.body.network
+    };
+
+    var headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': req.cookies['X-Project-Token']
+    };
+
+    var launchCluster = function () {
+        var launchClusterEndpoint = 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + req.cookies['Project-Id'] + '/clusters';
+        request({
+            url: launchClusterEndpoint,
+            method: 'POST',
+            headers: headers,
+            json: launchTemplate
+        }, function (error, response, body) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(response.statusCode, body);
+                res.json(body);
+            }
+        });
+    };
 }
 
 exports.launchInstance = function (req, res) {

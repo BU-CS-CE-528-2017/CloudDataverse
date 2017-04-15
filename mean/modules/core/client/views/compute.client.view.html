@@ -119,7 +119,7 @@
                                                 <th scope="row">
                                                     <div class="custom-controls-stacked">
                                                         <label class="custom-control custom-radio">
-                                                            <input ng-value="t.id" ng-model="vm.SelectedClusterTemplate" name="existingCluster" type="radio" class="custom-control-input">
+                                                            <input ng-value="t" ng-model="vm.SelectedClusterTemplate" name="existingCluster" type="radio" class="custom-control-input">
                                                             <span class="custom-control-indicator"></span>
                                                         </label>
                                                     </div>
@@ -132,7 +132,27 @@
                                         </tbody>
                                     </table>
                                     <hr />
-                                    <button style="float: right; margin-bottom: 1em;" class="btn btn-primary">Launch Cluster</button>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label>Cluster Name</label>
+                                                <input class="form-control" required ng-model="vm.ClusterFT.Name" placeholder="My cluster" type="text" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label>Network</label>
+                                                <select class="form-control" required ng-model="vm.ClusterFT.Network" ng-options="net.id as net.name for net in vm.Networks"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label>Key Pair</label>
+                                                <select class="form-control" required ng-model="vm.ClusterFT.KeyPair" ng-options="kp.name as kp.name for kp in vm.KeyPairs"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button ng-click="vm.LaunchFT()" style="float: right; margin-bottom: 1em;" class="btn btn-primary">Launch Cluster</button>
                                 </div>
                             </div>
                         </div>
