@@ -44,8 +44,8 @@
         var job = {
             'job_type': 'MapReduce',
             'container_name': vm.Cluster.Name,
-            'cluster_id': '79e92551-7bd0-4ed4-887d-f80eb39e5c94',
-            'input_sources': vm.SelectedFiles[0],
+            'cluster_id': vm.ClusterDetails.id,
+            'input_sources': vm.SelectedFiles,
             'binary_url': vm.Cluster.Name + '/' + vm.BinaryFileName
         };
 

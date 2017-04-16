@@ -20,7 +20,6 @@ exports.renderIndex = function (req, res) {
         res.render('modules/core/server/views/index', {
         });
     }
-
 };
 
 /**
@@ -162,12 +161,12 @@ exports.createJob = function (req, res) {
         var promise = new Promise(function (resolve, reject) {
 
             var dataSource = {
-                "url": 'swift://' + input_sources[i].url,
+                "url": 'swift://' + req.body.container_name + '/' + input_sources[i].name,
                 "type": "swift",
                 "name": input_sources[i].name + '_INPUT',
                 'credentials': {
-                    'user': 'bcorn@bu.edu',
-                    'password': 'XXXXXXXXXXX'
+                    'user': req.body.swift_username,
+                    'password': req.body.swift_password
                 }
             };
 
@@ -181,46 +180,44 @@ exports.createJob = function (req, res) {
                     console.log(error);
                 } else {
                     data_inputs.push(body.data_source.id);
-                    //console.log(body.data_source);
                     resolve('Input Data Source Created');
                 }
             });
         });
         promises.push(promise);
+
+        // Create Output Data Source
+        promises.push(new Promise(function (resolve, reject) {
+            var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_sources[0].name + '_OUTPUT';
+
+            var dataSource = {
+                'url': outputSourceUrl,
+                'type': 'swift',
+                'name': input_sources[0].name + '_OUTPUT',
+                'credentials': {
+                    'user': req.body.swift_username,
+                    'password': req.body.swift_password
+                }
+            };
+
+            request({
+                url: createDataSourceEndpoint,
+                method: 'POST',
+                headers: headers,
+                json: dataSource
+            }, function (error, response, body) {
+                if (error) {
+                    console.log('Error occured during output source creation...');
+                    console.log(error);
+                } else {
+                    data_outputs.push(body.data_source.id);
+                    resolve('Output Data Source Created');
+                }
+            });
+        }));
     }
 
-    // Create Output Data Source
-    promises.push(new Promise(function (resolve, reject) {
-        console.log('Creating data source...');
-        var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_sources[0].name + '_OUTPUT';
-
-        var dataSource = {
-            'url': outputSourceUrl,
-            'type': 'swift',
-            'name': input_sources[0].name + '_OUTPUT',
-            'credentials': {
-                'user': 'bcorn@bu.edu',
-                'password': 'XXXXXX'
-            }
-        };
-
-        request({
-            url: createDataSourceEndpoint,
-            method: 'POST',
-            headers: headers,
-            json: dataSource
-        }, function (error, response, body) {
-            if (error) {
-                console.log('Error occured during output source creation...');
-                console.log(error);
-            } else {
-                //console.log(body.data_source);
-                data_outputs.push(body.data_source.id);
-                resolve('Output Data Source Created');
-            }
-        });
-    }));
-    console.log(promises);
+    
     // Configure Job Binary from Upload
     promises.push(new Promise(function (resolve, reject) {
         console.log('Creating job binary...');
@@ -231,8 +228,8 @@ exports.createJob = function (req, res) {
             'url': 'swift://' + req.body.binary_url,
             'name': req.body.container_name + '_BINARY',
             'extra': {
-                'password': 'XXXXXXXX',
-                'user': 'bcorn@bu.edu'
+                'user': req.body.swift_username,
+                'password': req.body.swift_password
             }
         };
 
@@ -245,7 +242,6 @@ exports.createJob = function (req, res) {
             if (error) {
                 console.log(error);
             } else {
-                //console.log(body.job_binary);
                 job_template.libs.push(body.job_binary.id);
                 job_binary_id = body.job_binary.id;
                 resolve('Job Binary Created');
@@ -255,7 +251,6 @@ exports.createJob = function (req, res) {
 
     // Create Job Template
     var generate_job = function () {
-        console.log('Creating job template...');
         var promise = new Promise(function (resolve, reject) {
             request({
                 url: 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/jobs',
@@ -266,7 +261,6 @@ exports.createJob = function (req, res) {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(body);
                     job_id = body.job.id;
                     resolve('Job Template Created');
                 }
@@ -291,7 +285,6 @@ exports.createJob = function (req, res) {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(body);
                     resolve('Job Execution Attempted');
                     res.json(body);
                 }
@@ -302,7 +295,6 @@ exports.createJob = function (req, res) {
 
     // Execute Promises
     Promise.all(promises).then(function () {
-        // Data Sources Created
         generate_job().then(execute_job)
     });
 
