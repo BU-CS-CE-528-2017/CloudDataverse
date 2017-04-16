@@ -193,7 +193,7 @@ exports.createJob = function (req, res) {
             var dataSource = {
                 'url': outputSourceUrl,
                 'type': 'swift',
-                'name': input_sources[0].name + '_OUTPUT',
+                'name': input_sources[i].name + '_OUTPUT',
                 'credentials': {
                     'user': req.body.swift_username,
                     'password': req.body.swift_password
@@ -271,26 +271,34 @@ exports.createJob = function (req, res) {
 
     // Execute Job
     var execute_job = function () {
-        console.log('Executing job...');
-        start_job_template.input_id = data_inputs[0];
-        start_job_template.output_id = data_outputs[0];
 
-        var promise = new Promise(function (resolve, reject) {
-            request({
-                url: 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/jobs/' + job_id + '/execute',
-                method: 'POST',
-                headers: headers,
-                json: start_job_template
-            }, function (error, response, body) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    resolve('Job Execution Attempted');
-                    res.json(body);
-                }
+        var job_promises = [];
+
+        for (var i = 0; i < data_inputs.length; i++) {
+            start_job_template.input_id = data_inputs[i];
+            start_job_template.output_id = data_outputs[i];
+
+            var p = new Promise(function (resolve, reject) {
+                request({
+                    url: 'https://controller-0.kaizen.massopencloud.org:8386/v1.1/' + project_id + '/jobs/' + job_id + '/execute',
+                    method: 'POST',
+                    headers: headers,
+                    json: start_job_template
+                }, function (error, response, body) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        resolve('Job Execution Attempted');
+                    }
+                });
             });
-        });
-        return promise;
+            job_promises.push(p);
+        }
+
+        Promise.all(job_promises).then(function () {
+            res.json('DONE')
+        })
+
     };
 
     // Execute Promises
