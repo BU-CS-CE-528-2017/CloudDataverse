@@ -19,7 +19,7 @@
     <div class="tab-content">
         <div class="tab-pane active" id="dataset" role="tabpanel">
             <br />
-            <table class="table table-striped">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Compute</th>
@@ -27,15 +27,15 @@
                         <th>Size</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr ng-repeat="obj in vm.ContainerObjects.objects">
+                <tbody ng-class="{'table-separator' : !$first}" ng-repeat="container in vm.ContainerObjects">
+                    <tr ng-repeat="obj in container.objects">
                         <th scope="row">
                             <label class="custom-control custom-checkbox">
-                                <input checklist-model="vm.SelectedFiles" checklist-value="obj" type="checkbox" class="custom-control-input">
+                                <input checklist-model="vm.SelectedFiles" checklist-value="container.container_id + '/' + obj.name" type="checkbox" class="custom-control-input">
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </th>
-                        <td>{{vm.ContainerObjects.container_id + '/' + obj.name}}</td>
+                        <td>{{container.container_id + '/' + obj.name}}</td>
                         <td>{{obj.bytes}} bytes</td>
                     </tr>
                 </tbody>
@@ -297,7 +297,10 @@
         </div>
         <div class="tab-pane" id="jobs" role="tabpanel">
             <hr />
-            <div class="job-upload">
+            <div ng-show="!vm.SelectedFiles.length">
+                No files selected to compute over.
+            </div>
+            <div ng-show="vm.SelectedFiles.length" class="job-upload">
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="row">
@@ -305,8 +308,7 @@
                                 <h4 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">Job Input File(s)</h4>
                                 <ul class="list-group">
                                     <li ng-repeat="obj in vm.SelectedFiles" class="list-group-item">
-                                        <span>{{obj.name}}</span>&nbsp;-&nbsp;
-                                        <span class="text-muted">({{vm.ContainerObjects.container_id + '/' + obj.name}})</span>
+                                        <span class="text-muted">{{obj}}</span>
                                     </li>
                                 </ul>
                             </div>
@@ -421,4 +423,8 @@
         footer p {
             margin-bottom: .25rem;
         }
+
+    .table-separator{
+        border-top: 20px solid #eceeef !important;
+    }
 </style>

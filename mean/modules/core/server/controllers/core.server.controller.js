@@ -321,21 +321,39 @@ exports.listContainerObjects = function (req, res) {
         format: 'json'
     };
 
-    request({
-        url: swift + req.cookies['X-Container-Id'],
-        method: 'GET',
-        headers: headers,
-        qs: r
-    }, function (error, response, body) {
-        if (error) {
-            console.log(error);
-        } else {
-            var resp = {};
-            resp.objects = JSON.parse(body);
-            resp.container_id = req.cookies['X-Container-Id'];
-            res.json(resp);
-        }
-    });
+    var containers = JSON.parse(req.cookies['X-Container-Array']);
+    var container_promises = [];
+    var datasets = [];
+
+    for (var i = 0; i < containers.length; i++) {
+        var promise = new Promise(function (resolve, reject) {
+            var container_name = containers[i];
+            request({
+                url: swift + containers[i],
+                method: 'GET',
+                headers: headers,
+                qs: r
+            }, function (error, response, body) {
+                if (error) {
+                    console.log(error);
+                    resolve('Failure while obtaining objects.');
+                } else {
+                    var resp = {};
+                    resp.objects = JSON.parse(body);
+                    resp.container_id = container_name;
+                    datasets.push(resp);
+                    resolve('Container objects fetched.')
+                }
+            });
+        });
+        container_promises.push(promise);
+    };
+
+    Promise.all(container_promises).then(function () {
+        res.json(datasets);
+    })
+
+
 };
 
 exports.createClusterFromTemplate = function (req, res) {
@@ -851,6 +869,11 @@ exports.openStackAuth = function (req, res) {
 
 exports.captureContainer = function (req, res) {
     res.cookie('X-Container-Id', req.params.container, { maxAge: 60 * 60 * 1000, httpOnly: true });
+    res.redirect('/');
+}
+
+exports.captureContainers = function (req, res) {
+    res.cookie('X-Container-Array', JSON.stringify(req.body), { maxAge: 60 * 60 * 1000, httpOnly: true });
     res.redirect('/');
 }
 

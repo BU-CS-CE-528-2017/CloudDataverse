@@ -5,7 +5,8 @@ module.exports = function (app) {
     var core = require('../controllers/core.server.controller');
 
     // Define error pages
-    //app.route('/server-error').get(core.renderServerError);
+    app.route('/server-error').get(core.renderServerError);
+    app.post('/dvinput/container', core.captureContainers);
     app.get('/dvinput/:container',core.captureContainer);
     app.post('/api/auth', core.openStackAuth);
     app.get('/api/list/servers', core.listServers);
