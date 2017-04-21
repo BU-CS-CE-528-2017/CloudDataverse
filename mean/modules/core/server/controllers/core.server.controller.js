@@ -129,6 +129,9 @@ exports.createJob = function (req, res) {
     var project_id = req.cookies['Project-Id'];
     var token = req.cookies['X-Project-Token'];
 
+    // Random ID Assigned to Job Related Tasks
+    var jobId = Math.floor(1000 + Math.random() * 9000).toString();
+
     // Create Input Data Sources
     var promises = [];
     var data_inputs = [];
@@ -163,7 +166,7 @@ exports.createJob = function (req, res) {
             var dataSource = {
                 "url": 'swift://' + req.body.container_name + '/' + input_sources[i].name,
                 "type": "swift",
-                "name": input_sources[i].name + '_INPUT',
+                "name": input_sources[i].name + '_INPUT_' + jobId,
                 'credentials': {
                     'user': req.body.swift_username,
                     'password': req.body.swift_password
@@ -193,7 +196,7 @@ exports.createJob = function (req, res) {
             var dataSource = {
                 'url': outputSourceUrl,
                 'type': 'swift',
-                'name': input_sources[i].name + '_OUTPUT',
+                'name': input_sources[i].name + '_OUTPUT_' + jobId,
                 'credentials': {
                     'user': req.body.swift_username,
                     'password': req.body.swift_password
