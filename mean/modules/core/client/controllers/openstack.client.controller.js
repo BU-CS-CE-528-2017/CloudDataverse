@@ -30,8 +30,8 @@
           .then(function successCallback (res) {
             window.location = '/compute';
           }, function errorCallback(res) {
-            vm.LoginWarning = 'Oops... we couldn\'t authenticate you. Try again.';
-            vm.WarningFlag = true;
+            vm.LoginWarning = 'We couldn\'t authenticate you. Try again.';
+            //vm.WarningFlag = true;
           });
       }
     };
