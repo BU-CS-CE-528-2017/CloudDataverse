@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody ng-class="{'table-separator' : !$first}" ng-repeat="container in vm.ContainerObjects">
-                    <tr ng-repeat="obj in container.objects">
+                    <tr ng-repeat="obj in container.objects | filter: {bytes: '!' + 0}">
                         <th scope="row">
                             <label class="custom-control custom-checkbox">
                                 <input checklist-model="vm.SelectedFiles" checklist-value="container.container_id + '/' + obj.name" type="checkbox" class="custom-control-input">
@@ -350,6 +350,18 @@
                             <br />
                         </div>
                         <hr />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row" style="margin-bottom: 2em;">
+                                    <div class="col-sm-12">
+                                        <h4 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">Binary Main Class</h4>
+                                        <form class="form">
+                                            <input ng-model="vm.Job.MainClass" type="text" class="form-control" placeholder="Main Class">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <button ng-click="vm.CreateJob()" style="float: right;" type="button" class="btn btn-primary">Create Job(s)</button>
                     </div>
                 </div>
