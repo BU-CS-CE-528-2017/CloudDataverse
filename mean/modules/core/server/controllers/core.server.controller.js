@@ -858,14 +858,13 @@ exports.openStackAuth = function (req, res) {
 
     keystone.getToken(req.body.user, req.body.password, function (error, token) {
         if (error) {
-            res.status(400);
-            res.send('Error while authenticating.');
-            console.error('An error occurred while authenticating the user with Open Stack.');
+            res.send('ERROR');
+            console.error('Authentication with OpenStack failed.');
         } else {
-            // creating cookie for auth token
+            // Creating cookie with OpenStack token and project id
             res.cookie('X-Subject-Token', token.token, { maxAge: 60 * 60 * 1000, httpOnly: true });
             res.cookie('Project-Id', token.project.id, { maxAge: 60 * 60 * 1000, httpOnly: true });
-            res.send('User authenticated');
+            res.send('OK');
         }
     });
 };
@@ -877,6 +876,7 @@ exports.captureContainer = function (req, res) {
 
 exports.captureContainers = function (req, res) {
     res.cookie('X-Container-Array', JSON.stringify(req.body), { maxAge: 60 * 60 * 1000, httpOnly: true });
+    res.send(200);
 }
 
 /**

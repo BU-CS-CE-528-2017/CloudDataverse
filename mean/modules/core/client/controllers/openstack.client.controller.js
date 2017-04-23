@@ -26,15 +26,15 @@
       } else {
           // make post to node auth endpoint
         var req = { user: vm.User.UserName, password: vm.User.Password };
-        $http.post('/api/auth', req, function successCallback(res)){
-          //.then(function successCallback (res) {
-            window.location = '/compute';
-          })
-          .fail(function errorCallback(res)) {
-            //window.location = '/error';
-            vm.LoginWarning = 'We couldn\'t authenticate you. Try again.';
-            vm.WarningFlag = true;
-          });
+        $http.post('/api/auth', req)
+            .then(function (res) {
+                if (res.data == 'OK')
+                    window.location = '/compute';
+                else {
+                    vm.LoginWarning = 'We couldn\'t authenticate you. Please try again.';
+                    vm.WarningFlag = true;
+                }
+        });
       }
     };
   }
