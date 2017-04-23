@@ -877,7 +877,6 @@ exports.captureContainer = function (req, res) {
 
 exports.captureContainers = function (req, res) {
     res.cookie('X-Container-Array', JSON.stringify(req.body), { maxAge: 60 * 60 * 1000, httpOnly: true });
-    res.redirect('/');
 }
 
 /**
