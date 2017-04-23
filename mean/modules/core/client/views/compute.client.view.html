@@ -77,7 +77,7 @@
                                                 <th scope="row">
                                                     <div class="custom-controls-stacked">
                                                         <label class="custom-control custom-radio">
-                                                            <input ng-value="t.id" ng-model="vm.SelectedCluster" name="existingCluster" type="radio" class="custom-control-input">
+                                                            <input ng-value="t.id" ng-model="vm.SelectedCluster" ng-change="vm.MainClass = (t.plugin_name == 'storm' || t.plugin_name == 'spark') ? true : false" name="existingCluster" type="radio" class="custom-control-input">
                                                             <span class="custom-control-indicator"></span>
                                                         </label>
                                                     </div>
@@ -122,7 +122,7 @@
                                                 <th scope="row">
                                                     <div class="custom-controls-stacked">
                                                         <label class="custom-control custom-radio">
-                                                            <input ng-value="t" ng-model="vm.SelectedClusterTemplate" name="existingCluster" type="radio" class="custom-control-input">
+                                                            <input ng-value="t" ng-model="vm.SelectedClusterTemplate" name="existingCluster" ng-change="vm.MainClass = (t.plugin_name == 'storm' || t.plugin_name == 'spark') ? true : false" type="radio" class="custom-control-input">
                                                             <span class="custom-control-indicator"></span>
                                                         </label>
                                                     </div>
@@ -194,7 +194,14 @@
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label>Select Plugin</label>
-                                                    <select ng-init="vm.Cluster.Plugin = 'vanilla'" class="form-control" required ng-model="vm.Cluster.Plugin" ng-options="plugin.name as plugin.title for plugin in vm.Plugins"></select>
+                                                    <select 
+                                                            ng-init="vm.Cluster.Plugin = 'vanilla'" 
+                                                            class="form-control" 
+                                                            required 
+                                                            ng-model="vm.Cluster.Plugin" 
+                                                            ng-options="plugin.name as plugin.title for plugin in vm.Plugins"
+                                                            ng-click="vm.MainClass = (vm.Cluster.Plugin == 'storm' || vm.Cluster.Plugin == 'spark') ? true : false">
+                                                    </select>
                                                     <div class="row">
                                                         <div class="col-sm-6">
                                                             <small>Master Processes:<br /></small>
@@ -350,7 +357,7 @@
                             <br />
                         </div>
                         <hr />
-                        <div class="row">
+                        <div ng-hide="vm.MainClass == undefined || vm.MainClass == false" class="row">
                             <div class="col-sm-12">
                                 <div class="row" style="margin-bottom: 2em;">
                                     <div class="col-sm-12">
