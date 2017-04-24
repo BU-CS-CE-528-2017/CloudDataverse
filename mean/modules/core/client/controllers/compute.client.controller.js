@@ -105,7 +105,7 @@
                   } else {
                       vm.LaunchSuccess = true;
                       vm.ClusterDetails = res.data.cluster;
-
+                      vm.SelectedCluster = vm.ClusterDetails.id;
                       statusUpdater = setInterval(updateLaunchStatus, 5000);
                   }
               });
@@ -128,7 +128,7 @@
                   } else {
                       vm.LaunchSuccess = true;
                       vm.ClusterDetails = res.data.cluster;
-
+                      vm.SelectedCluster = vm.ClusterDetails.id;
                       statusUpdater = setInterval(updateLaunchStatus, 5000);
                   }
               });
@@ -210,10 +210,12 @@
                               .then(function (res) {
                                   vm.KeyPairs = keypairs;
                                   vm.Cluster.KeyPair = vm.KeyPairs[0].name;
+                                  vm.ClusterFT.KeyPair = vm.KeyPairs[0].name;
 
                                   vm.Networks = res.data;
                                   vm.Networks = vm.Networks.splice(1, 1);
                                   vm.Cluster.Network = vm.Networks[0].id;
+                                  vm.ClusterFT.Network = vm.Networks[0].id;
                               });
                         });
 

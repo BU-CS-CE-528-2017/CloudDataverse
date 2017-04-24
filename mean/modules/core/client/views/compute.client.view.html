@@ -162,7 +162,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button ng-hide="vm.LaunchSuccess" ng-click="vm.LaunchFT()" style="float: right; margin-bottom: 1em;" class="btn btn-primary">Create</button>
+                                    <button ng-disabled="vm.Launching || !vm.ClusterFT.Name.length" ng-hide="vm.LaunchSuccess" ng-click="vm.LaunchFT()" style="float: right; margin-bottom: 1em;" class="btn btn-primary">Create</button>
                                     <div ng-show="vm.LaunchSuccess" class="row">
                                         <hr />
                                         <div class="col-sm-12">
@@ -295,7 +295,7 @@
                                     <div class="row justify-content-end">
                                         <div class="col col-sm-2">
                                             <div class="form-group">
-                                                <button href="" ng-click="vm.LaunchCluster(); vm.Launching = true;" ng-disabled="vm.Launching" style="margin-top: 1em; float: right;" class="btn btn-primary btn-block">Create</button>
+                                                <button ng-click="vm.LaunchCluster(); vm.Launching = true;" ng-disabled="vm.Launching || !vm.Cluster.Name.length" style="margin-top: 1em; float: right;" class="btn btn-primary btn-block">Create</button>
                                             </div>
                                         </div>
                                     </div>
