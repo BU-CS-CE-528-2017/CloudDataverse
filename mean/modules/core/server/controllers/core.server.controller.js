@@ -485,10 +485,12 @@ exports.getContainerId = function (req, res) {
 
   // var swift = 'http://rdgw.kaizen.massopencloud.org/swift/v1/' + req.params.id;
   // console.log(swift);
-  req.session.containerid = req.params.id;
-  console.log(req.session.containerid);
-  res.redirect('/');
-  // res.send('container set');
+  // req.session.containerid = req.params.id;
+  console.log(req.body);
+
+  // console.log(req.session.containerid);
+  // res.redirect('/');
+  res.send('container set');
 };
 
 /**
