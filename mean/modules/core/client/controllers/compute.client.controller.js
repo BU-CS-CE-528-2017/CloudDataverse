@@ -157,29 +157,6 @@
                   if (vm.ClusterDetails.status === 'Active') {
                       clearInterval(statusUpdater);
                       $('#cluster-progress').removeClass('progress-bar-animated').removeClass('progress-bar-striped');
-
-                      var job_type = '';
-
-                      switch (vm.Cluster.Plugin) {
-                          case 'vanilla':
-                              job_type = 'MapReduce';
-                              break;
-                      }
-
-                      // Start Job Creation Cycle
-                      var job = {
-                          'job_type': job_type,
-                          'container_name': vm.Cluster.Name,
-                          'cluster_id': vm.ClusterDetails.id,
-                          'input_sources': vm.InputFiles,
-                          'binary_url': vm.Cluster.Name + '/' + vm.BinaryFileName
-                      };
-
-                      $http.post('/api/create/data_job', job)
-                        .then(function (res) {
-                            vm.Job = res.data.job_execution;
-                            statusUpdater = setInterval(updateJobStatus, 5000);
-                        });
                   }
               });
         };
