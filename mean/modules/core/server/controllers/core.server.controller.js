@@ -324,7 +324,7 @@ exports.listContainerObjects = function (req, res) {
         format: 'json'
     };
 
-    var containers = JSON.parse(req.cookies['X-Container-Array']);
+    var containers = JSON.parse(req.cookies['X-Container-Array']).containerid;
     var container_promises = [];
     var datasets = [];
 
