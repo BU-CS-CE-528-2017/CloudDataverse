@@ -4,6 +4,8 @@ var validator = require('validator'),
   path = require('path'),
   config = require(path.resolve('./config/config'));
 
+var request = require('request');
+
 var conf = require(path.resolve('./config'));
 
 /**
@@ -401,12 +403,15 @@ exports.createClusterFromTemplate = function (req, res) {
         }, function (error, response, body) {
             if (error) {
                 console.log(error);
+                res.send('ERROR');
             } else {
                 console.log(response.statusCode, body);
                 res.json(body);
             }
         });
     };
+
+    launchCluster();
 }
 
 exports.launchInstance = function (req, res) {
