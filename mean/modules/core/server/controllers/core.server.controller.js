@@ -326,7 +326,7 @@ exports.listContainerObjects = function (req, res) {
         format: 'json'
     };
 
-    var containers = JSON.parse(req.cookies['X-Container-Array']).containerid;
+    var containers = JSON.parse(req.cookies['X-Container-Array']);
     var container_promises = [];
     var datasets = [];
 
@@ -880,7 +880,7 @@ exports.captureContainer = function (req, res) {
 }
 
 exports.captureContainers = function (req, res) {
-    res.cookie('X-Container-Array', JSON.stringify(req.body), { maxAge: 60 * 60 * 1000, httpOnly: true });
+    res.cookie('X-Container-Array', JSON.stringify(req.body).containerid, { maxAge: 60 * 60 * 1000, httpOnly: true });
     res.send(200);
 }
 

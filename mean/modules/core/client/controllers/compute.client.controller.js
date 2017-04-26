@@ -60,18 +60,26 @@
         };
 
         vm.CreateJob = function () {
+            var clusterName = '';
+
+            if (!vm.Cluster.Name.length)
+                clusterName = vm.ClusterFT.Name;
+            else
+                clusterName = vm.Cluster.Name;
+
             var job = {
                 'job_type': 'MapReduce',
                 'container_name': vm.Cluster.Name,
                 'cluster_id': vm.ClusterDetails.id,
                 'input_sources': vm.SelectedFiles,
-                'binary_url': vm.Cluster.Name + '/' + vm.BinaryFileName
+                'binary_url': clusterName + '/' + vm.BinaryFileName
             };
 
             $http.post('/api/create/data_job', job)
               .then(function (res) {
-                  vm.Job = res.data.job_execution;
-                  statusUpdater = setInterval(updateJobStatus, 1000);
+                  //vm.Job = res.data.job_execution;
+                  //statusUpdater = setInterval(updateJobStatus, 1000);
+                  window.location.href('/jobs');
               });
         };
 
