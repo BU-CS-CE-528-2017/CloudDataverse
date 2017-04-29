@@ -68,11 +68,14 @@
                 clusterName = vm.Cluster.Name;
 
             var job = {
-                'job_type': 'MapReduce',
+                'job_type': vm.JobConfig.JobType,
                 'container_name': vm.Cluster.Name,
                 'cluster_id': vm.ClusterDetails.id,
                 'input_sources': vm.SelectedFiles,
-                'binary_url': clusterName + '/' + vm.BinaryFileName
+                'binary_url': clusterName + '/' + vm.BinaryFileName,
+                'swift_username': vm.Swift.Username,
+                'swift_password': vm.Swift.Password,
+                'main_class': vm.JobConfig.MainClass
             };
 
             $http.post('/api/create/data_job', job)
@@ -207,6 +210,9 @@
                     $http.get('/api/list/clusters')
                       .then(function (res) {
                           vm.Clusters = JSON.parse(res.data).clusters;
+
+                          if (vm.Clusters.length)
+                              vm.Cluster.Name = vm.Clusters[0].name;
                       });
 
                     $http.get('/api/list/cluster_templates')

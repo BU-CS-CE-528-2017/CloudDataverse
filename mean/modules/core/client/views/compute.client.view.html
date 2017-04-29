@@ -81,7 +81,7 @@
                                                 <th scope="row">
                                                     <div class="custom-controls-stacked">
                                                         <label class="custom-control custom-radio">
-                                                            <input ng-value="t.id" ng-model="vm.SelectedCluster" ng-change="vm.MainClass = (t.plugin_name == 'storm' || t.plugin_name == 'spark') ? true : false" name="existingCluster" type="radio" class="custom-control-input">
+                                                            <input ng-value="t.id" ng-model="vm.SelectedCluster" ng-change="vm.MainClass = (t.plugin_name == 'storm' || t.plugin_name == 'spark') ? true : false; vm.Cluster.Name = t.name" name="existingCluster" type="radio" class="custom-control-input">
                                                             <span class="custom-control-indicator"></span>
                                                         </label>
                                                     </div>
@@ -369,12 +369,10 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <h5 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">Job Type</h5>
-                                        <select class="form-control">
-                                            <option>1</option>
-                                            <option>2</option>
-                                            <option>3</option>
-                                            <option>4</option>
-                                            <option>5</option>
+                                        <select ng-model="vm.JobConfig.JobType" class="form-control">
+                                            <option ng-value="mapreduce">MapReduce</option>
+                                            <option ng-value="spark">Spark</option>
+                                            <option ng-value="storm">Storm</option>
                                         </select>
                                     </div>
                                 </div>
@@ -388,7 +386,7 @@
                                     <div class="col-sm-12">
                                         <h4 style="font-weight: 200; margin-top: 0em; margin-bottom: .5em;">Binary Main Class</h4>
                                         <form class="form">
-                                            <input ng-model="vm.Job.MainClass" type="text" class="form-control" placeholder="Main Class">
+                                            <input ng-model="vm.JobConfig.MainClass" type="text" class="form-control" placeholder="Main Class">
                                         </form>
                                     </div>
                                 </div>
