@@ -163,12 +163,15 @@ exports.createJob = function (req, res) {
     var input_sources = req.body.input_sources;
 
     for (var i = 0; i < input_sources.length; i++) {
+        var input_src = input_sources[i].split('/')[1];
+
         var promise = new Promise(function (resolve, reject) {
 
+
             var dataSource = {
-                "url": 'swift://' + req.body.container_name + '/' + input_sources[i].name,
+                "url": 'swift://' + input_sources[i],
                 "type": "swift",
-                "name": input_sources[i].name + '_INPUT_' + jobId,
+                "name": input_src + '_INPUT_' + jobId,
                 'credentials': {
                     'user': req.body.swift_username,
                     'password': req.body.swift_password
@@ -184,7 +187,7 @@ exports.createJob = function (req, res) {
                 if (error) {
                     console.log(error);
                 } else {
-                    data_inputs.push(body.data_source.id);
+                    data_inputs.push({ 'id': body.data_source.id, 'name': input_src });
                     resolve('Input Data Source Created');
                 }
             });
@@ -193,12 +196,12 @@ exports.createJob = function (req, res) {
 
         // Create Output Data Source
         promises.push(new Promise(function (resolve, reject) {
-            var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_sources[0].name + '_OUTPUT';
+            var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_src + '_OUTPUT';
 
             var dataSource = {
                 'url': outputSourceUrl,
                 'type': 'swift',
-                'name': input_sources[i].name + '_OUTPUT_' + jobId,
+                'name': input_src + '_OUTPUT_' + jobId,
                 'credentials': {
                     'user': req.body.swift_username,
                     'password': req.body.swift_password
@@ -215,7 +218,7 @@ exports.createJob = function (req, res) {
                     console.log('Error occured during output source creation...');
                     console.log(error);
                 } else {
-                    data_outputs.push(body.data_source.id);
+                    data_outputs.push({ 'id': body.data_source.id, 'name': input_src });
                     resolve('Output Data Source Created');
                 }
             });
@@ -280,8 +283,14 @@ exports.createJob = function (req, res) {
         var job_promises = [];
 
         for (var i = 0; i < data_inputs.length; i++) {
-            start_job_template.input_id = data_inputs[i];
-            start_job_template.output_id = data_outputs[i];
+            start_job_template.input_id = data_inputs[i].id;
+
+            for (var j = 0; j < data_outputs.length; j++) {
+                if (data_outputs[j].name == data_inputs[i].name) {
+                    start_job_template.output_id = data_outputs[i].id;
+                    break;
+                }
+            }
 
             var p = new Promise(function (resolve, reject) {
                 request({

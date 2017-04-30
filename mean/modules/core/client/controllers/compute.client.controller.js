@@ -70,7 +70,7 @@
             var job = {
                 'job_type': vm.JobConfig.JobType,
                 'container_name': vm.Cluster.Name,
-                'cluster_id': vm.ClusterDetails.id,
+                'cluster_id': vm.SelectedCluster,
                 'input_sources': vm.SelectedFiles,
                 'binary_url': clusterName + '/' + vm.BinaryFileName,
                 'swift_username': vm.Swift.Username,
@@ -80,8 +80,6 @@
 
             $http.post('/api/create/data_job', job)
               .then(function (res) {
-                  //vm.Job = res.data.job_execution;
-                  //statusUpdater = setInterval(updateJobStatus, 1000);
                   window.location.href('/jobs');
               });
         };
