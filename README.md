@@ -15,10 +15,10 @@ For installing MongoDB, please refer to their official documentation:
 [Installing Mongo on Ubuntu 16.04](https://docs.mongodb.com/v3.0/tutorial/install-mongodb-on-ubuntu/)
 
 ### Installing
-Pull the CloudCompute UI repository to your instance
+Clone the CloudCompute UI repository to your instance
 
 ```
-git pull https://github.com/BU-CS-CE-528-2017/CloudDataverse
+git clone https://github.com/BU-CS-CE-528-2017/CloudDataverse
 ```
 Ensure MongoDB is running on your instance before continuing (refer to prior instructions if necessary) and you are in the CloudDataverse directory.
 
@@ -32,6 +32,15 @@ This will run CloudCompute locally on localhost port 3000 by default.
 ```
 http://localhost:3000/
 ```
+### Dataverse
+Pull the Cloud Dataverse branch of Dataverse to your repository
+
+```
+git pull https://github.com/
+```
+
+For completing the Dataverse installation, please refer to their official documentation:
+[Dataverse Installation] (http://guides.dataverse.org/en/latest/installation/)
 
 ## Use and Limitations
 
