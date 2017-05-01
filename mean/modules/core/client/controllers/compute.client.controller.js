@@ -80,7 +80,7 @@
 
             $http.post('/api/create/data_job', job)
               .then(function (res) {
-                  window.location.href('/jobs');
+                  window.location.href = "/jobs";
               });
         };
 
