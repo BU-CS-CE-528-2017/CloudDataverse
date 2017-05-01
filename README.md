@@ -57,3 +57,11 @@ At this time, CloudCompute only successfully completes jobs with Hadoop MapReduc
 * **Will Norman** - [willnorman](https://github.com/willnorman)
 * **Sneha Pradhan** - [snehha](https://github.com/snehha)
 * **Ang Li** - [Allegro-Leon-Li](https://github.com/Allegro-Leon-Li)
+
+## Video Demonstrations
+[Final Presentation](https://youtu.be/Bu5rXRN_VQQ)
+[Sprint 2](https://www.youtube.com/watch?v=lFgZbCzxjtM)
+[Sprint 3](https://www.youtube.com/watch?v=vQn6MnMw2PE)
+[Sprint 4](https://www.youtube.com/watch?v=aS_98WePMUE)
+
+
