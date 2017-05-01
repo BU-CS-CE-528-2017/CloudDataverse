@@ -4,7 +4,7 @@
       .module('core')
       .controller('ComputeController', ComputeController);
 
-    function ComputeController($scope, $http) {
+    function ComputeController($scope, $http, $location) {
         var vm = this;
 
         // Config
@@ -80,7 +80,7 @@
 
             $http.post('/api/create/data_job', job)
               .then(function (res) {
-                  window.location.href = "/jobs";
+                  $location.path('/jobs')
               });
         };
 

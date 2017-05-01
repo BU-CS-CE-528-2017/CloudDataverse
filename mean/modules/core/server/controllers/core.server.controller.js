@@ -187,7 +187,7 @@ exports.createJob = function (req, res) {
                 if (error) {
                     console.log(error);
                 } else {
-                    data_inputs.push({ 'id': body.data_source.id, 'name': input_src });
+                    data_inputs.push({ 'id': body.data_source.id, 'name': body.data_source.name.split('_')[0] });
                     resolve('Input Data Source Created');
                 }
             });
@@ -196,7 +196,7 @@ exports.createJob = function (req, res) {
 
         // Create Output Data Source
         promises.push(new Promise(function (resolve, reject) {
-            var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_src + '_OUTPUT';
+            var outputSourceUrl = 'swift://' + req.body.container_name + '/' + input_src + '_OUTPUT_' + jobId;
 
             var dataSource = {
                 'url': outputSourceUrl,
@@ -218,7 +218,7 @@ exports.createJob = function (req, res) {
                     console.log('Error occured during output source creation...');
                     console.log(error);
                 } else {
-                    data_outputs.push({ 'id': body.data_source.id, 'name': input_src });
+                    data_outputs.push({ 'id': body.data_source.id, 'name': body.data_source.name.split('_')[0] });
                     resolve('Output Data Source Created');
                 }
             });
