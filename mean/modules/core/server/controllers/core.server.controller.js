@@ -287,7 +287,7 @@ exports.createJob = function (req, res) {
 
             for (var j = 0; j < data_outputs.length; j++) {
                 if (data_outputs[j].name == data_inputs[i].name) {
-                    start_job_template.output_id = data_outputs[i].id;
+                    start_job_template.output_id = data_outputs[j].id;
                     break;
                 }
             }
