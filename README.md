@@ -36,10 +36,11 @@ http://localhost:3000/
 Pull the Cloud Dataverse branch of Dataverse to your repository
 
 ```
-git pull https://github.com/
+git pull https://github.com/Allegro-Leon-Li/dataverse.git
 ```
+Use the branch **4.5-export-harvest-swift-update**
 
-For completing the Dataverse installation, please refer to their official documentation:
+For completing the Dataverse installation, please refer to `swift_setup.txt` in the Dataverse repository above and their official documentation:
 [Dataverse Installation] (http://guides.dataverse.org/en/latest/installation/)
 
 ## Use and Limitations
