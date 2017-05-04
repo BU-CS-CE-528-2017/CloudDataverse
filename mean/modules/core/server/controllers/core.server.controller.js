@@ -234,7 +234,7 @@ exports.createJob = function (req, res) {
 
         var jobBinary = {
             'url': 'swift://' + req.body.binary_url,
-            'name': req.body.container_name + '_BINARY',
+            'name': req.body.container_name + '_BINARY_' + jobId,
             'extra': {
                 'user': req.body.swift_username,
                 'password': req.body.swift_password
