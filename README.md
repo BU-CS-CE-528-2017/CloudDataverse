@@ -59,7 +59,7 @@ At this time, CloudCompute only successfully completes jobs with Hadoop MapReduc
 * **Ang Li** - [Allegro-Leon-Li](https://github.com/Allegro-Leon-Li)
 
 ## Video Demonstrations
-[Final Presentation](https://youtu.be/Bu5rXRN_VQQ)
+[Final Presentation](https://www.youtube.com/watch?v=0n4qBUT8dLI)
 
 [UI/UX Demonstration](https://youtu.be/1iuFgKIw4H0)
 
